@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="EditTextHintStyle" parent="Widget.AppCompat.EditText">
-        <item name="android:textColorHint">#FFFFFF</item>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+
     </style>
+
 </resources>

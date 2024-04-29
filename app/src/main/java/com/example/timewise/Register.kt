@@ -36,6 +36,14 @@ class Register : AppCompatActivity() {
         val emailEditText: EditText = findViewById(R.id.txtRegisterEmail)
         val registerButton: Button = findViewById(R.id.btnRegisterAccount)
 
+        val skip: Button = findViewById(R.id.btnSkipToHomepage)
+
+        skip.setOnClickListener {
+            val intent = Intent(this, HomePage::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         registerButton.setOnClickListener {
             val name = nameEditText.text.toString()
             val email = emailEditText.text.toString()
