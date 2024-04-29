@@ -25,10 +25,6 @@ class Register : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        // Load image from Google Drive link using Glide
-        Glide.with(this)
-            .load("https://drive.google.com/uc?export=view&id=1UIMVG78OboB96ra0KPrLa4D1risr4TW4")
-            .into(findViewById(R.id.imgTimeWiseLogo))
 
         val passwordEditText: EditText = findViewById(R.id.txtRegisterPassword)
         val confirmPasswordEditText: EditText = findViewById(R.id.txtRegisterConfirmPassword)

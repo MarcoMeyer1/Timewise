@@ -11,6 +11,7 @@
 
     <ImageView
         android:id="@+id/imgTimeWiseLogo"
+        android:src="@drawable/ic_tw_full_logo"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="41dp"
@@ -23,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.8"
-        tools:srcCompat="@tools:sample/avatars" />
+       />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -40,8 +41,8 @@
 
         <Button
             android:id="@+id/btnRegisterAccount"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="284dp"
+            android:layout_height="53dp"
             android:layout_marginStart="45dp"
             android:layout_marginEnd="45dp"
             android:layout_marginBottom="59dp"
@@ -131,6 +132,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="Button"
+
         app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout" />

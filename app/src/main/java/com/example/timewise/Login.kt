@@ -21,9 +21,7 @@ class Login : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        Glide.with(this)
-            .load("https://drive.google.com/uc?export=view&id=1UIMVG78OboB96ra0KPrLa4D1risr4TW4")
-            .into(findViewById(R.id.imgTimeWiseLogo))
+
 
         val emailEditText: EditText = findViewById(R.id.txtLoginEmail)
         val passwordEditText: EditText = findViewById(R.id.txtLoginPassword)
