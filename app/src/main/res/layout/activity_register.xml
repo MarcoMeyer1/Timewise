@@ -5,90 +5,125 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Register">
-
-    <EditText
-        android:id="@+id/txtRegisterName"
-        android:layout_width="239dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="41dp"
-        android:ems="10"
-        android:hint="Full Name"
-        android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/txtRegisterEmail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgTimeWiseLogo" />
-
-    <EditText
-        android:id="@+id/txtRegisterEmail"
-        android:layout_width="241dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="41dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/txtRegisterPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRegisterName" />
-
-    <EditText
-        android:id="@+id/txtRegisterConfirmPassword"
-        android:layout_width="237dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="64dp"
-        android:ems="10"
-        android:hint="Confirm Password"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/btnRegisterAccount"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRegisterPassword" />
-
-    <EditText
-        android:id="@+id/txtRegisterPassword"
-        android:layout_width="238dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="34dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/txtRegisterConfirmPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRegisterEmail" />
-
-    <Button
-        android:id="@+id/btnRegisterAccount"
-        android:layout_width="256dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="103dp"
-        android:backgroundTint="#92D050"
-        android:text="Register Account"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRegisterConfirmPassword" />
+    tools:context=".Register"
+    tools:layout_editor_absoluteX="-14dp"
+    tools:layout_editor_absoluteY="-173dp">
 
     <ImageView
         android:id="@+id/imgTimeWiseLogo"
         android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginTop="20dp"
-    android:layout_marginBottom="54dp"
-    app:layout_constraintWidth_percent="0.8"
-    app:layout_constraintHeight_percent="0.16"
-    app:layout_constraintDimensionRatio="W,309:124"
-    app:layout_constraintBottom_toTopOf="@+id/txtRegisterName"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:srcCompat="@tools:sample/avatars" />
+        android:layout_height="0dp"
+        android:layout_marginStart="41dp"
+        android:layout_marginTop="39dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="31dp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.8"
+        tools:srcCompat="@tools:sample/avatars" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginEnd="29dp"
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/rounded_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgTimeWiseLogo">
+
+        <Button
+            android:id="@+id/btnRegisterAccount"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="45dp"
+            android:layout_marginEnd="45dp"
+            android:layout_marginBottom="59dp"
+            android:backgroundTint="#92D050"
+            android:text="Register Account"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtRegisterConfirmPassword" />
+
+        <EditText
+            android:id="@+id/txtRegisterConfirmPassword"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginEnd="46dp"
+            android:layout_marginBottom="50dp"
+            android:backgroundTint="#FFFFFF"
+            android:ems="10"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            android:textColor="#FDFDFD"
+            android:textColorHint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/btnRegisterAccount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtRegisterPassword" />
+
+        <EditText
+            android:id="@+id/txtRegisterPassword"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="31dp"
+            android:backgroundTint="#FFFFFF"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColor="#FDFDFD"
+            android:textColorHint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/txtRegisterConfirmPassword"
+            app:layout_constraintEnd_toEndOf="@+id/txtRegisterConfirmPassword"
+            app:layout_constraintStart_toStartOf="@+id/txtRegisterConfirmPassword"
+            app:layout_constraintTop_toBottomOf="@+id/txtRegisterEmail" />
+
+        <EditText
+            android:id="@+id/txtRegisterEmail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="45dp"
+            android:layout_marginEnd="45dp"
+            android:layout_marginBottom="37dp"
+            android:backgroundTint="#FFFFFF"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textColor="#FDFDFD"
+            android:textColorHint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/txtRegisterPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtRegisterName" />
+
+        <EditText
+            android:id="@+id/txtRegisterName"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="47dp"
+            android:layout_marginTop="42dp"
+            android:layout_marginEnd="47dp"
+            android:layout_marginBottom="33dp"
+            android:backgroundTint="#FFFFFF"
+            android:ems="10"
+            android:hint="Full Name"
+            android:inputType="text"
+            android:textColor="#FDFDFD"
+            android:textColorHint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/txtRegisterEmail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
