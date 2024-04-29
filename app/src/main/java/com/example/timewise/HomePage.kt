@@ -1,6 +1,8 @@
 package com.example.timewise
 
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +17,17 @@ class HomePage : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        var leftIcon : ImageView = findViewById(R.id.left_icon)
+        var rightIcon : ImageView = findViewById(R.id.right_icon)
+
+        leftIcon.setOnClickListener {
+            Toast.makeText(this, "Hello world", Toast.LENGTH_SHORT).show()
+        }
+
+        rightIcon.setOnClickListener {
+            Toast.makeText(this, "Hello world", Toast.LENGTH_SHORT).show()
         }
     }
 }
