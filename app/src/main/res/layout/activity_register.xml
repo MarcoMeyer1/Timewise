@@ -9,62 +9,86 @@
 
     <EditText
         android:id="@+id/txtRegisterName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="182dp"
-        android:layout_marginBottom="46dp"
+        android:layout_width="239dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="41dp"
         android:ems="10"
         android:hint="Full Name"
         android:inputType="text"
         app:layout_constraintBottom_toTopOf="@+id/txtRegisterEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/txtRegisterPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="38dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/txtRegisterConfirmPassword"
-        app:layout_constraintStart_toStartOf="@+id/txtRegisterEmail"
-        app:layout_constraintTop_toBottomOf="@+id/txtRegisterEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/imgTimeWiseLogo" />
 
     <EditText
         android:id="@+id/txtRegisterEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_width="241dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="41dp"
         android:ems="10"
         android:hint="Email"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/txtRegisterPassword"
-        app:layout_constraintStart_toStartOf="@+id/txtRegisterName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtRegisterName" />
 
     <EditText
         android:id="@+id/txtRegisterConfirmPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="66dp"
+        android:layout_width="237dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="64dp"
         android:ems="10"
         android:hint="Confirm Password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/btnRegisterAccount"
-        app:layout_constraintStart_toStartOf="@+id/txtRegisterPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtRegisterPassword" />
+
+    <EditText
+        android:id="@+id/txtRegisterPassword"
+        android:layout_width="238dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="34dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/txtRegisterConfirmPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtRegisterEmail" />
 
     <Button
         android:id="@+id/btnRegisterAccount"
-        android:layout_width="248dp"
+        android:layout_width="256dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="122dp"
+        android:layout_marginBottom="103dp"
+        android:backgroundTint="#92D050"
         android:text="Register Account"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtRegisterConfirmPassword" />
+
+    <ImageView
+        android:id="@+id/imgTimeWiseLogo"
+        android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="54dp"
+    app:layout_constraintWidth_percent="0.8"
+    app:layout_constraintHeight_percent="0.16"
+    app:layout_constraintDimensionRatio="W,309:124"
+    app:layout_constraintBottom_toTopOf="@+id/txtRegisterName"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:srcCompat="@tools:sample/avatars" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
