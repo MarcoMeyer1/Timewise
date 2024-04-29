@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Register">
+
+    <EditText
+        android:id="@+id/txtRegisterName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="182dp"
+        android:layout_marginBottom="46dp"
+        android:ems="10"
+        android:hint="Full Name"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/txtRegisterEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/txtRegisterPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="38dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/txtRegisterConfirmPassword"
+        app:layout_constraintStart_toStartOf="@+id/txtRegisterEmail"
+        app:layout_constraintTop_toBottomOf="@+id/txtRegisterEmail" />
+
+    <EditText
+        android:id="@+id/txtRegisterEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/txtRegisterPassword"
+        app:layout_constraintStart_toStartOf="@+id/txtRegisterName"
+        app:layout_constraintTop_toBottomOf="@+id/txtRegisterName" />
+
+    <EditText
+        android:id="@+id/txtRegisterConfirmPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="66dp"
+        android:ems="10"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/btnRegisterAccount"
+        app:layout_constraintStart_toStartOf="@+id/txtRegisterPassword"
+        app:layout_constraintTop_toBottomOf="@+id/txtRegisterPassword" />
+
+    <Button
+        android:id="@+id/btnRegisterAccount"
+        android:layout_width="248dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="122dp"
+        android:text="Register Account"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtRegisterConfirmPassword" />
+</androidx.constraintlayout.widget.ConstraintLayout>
