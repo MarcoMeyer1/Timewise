@@ -5,13 +5,19 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class HomePage : BaseActivity() {
+
+    private val userName: String = UserData.loggedUserName
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,5 +28,36 @@ class HomePage : BaseActivity() {
             insets
         }
 
+        setupWelcomeMessage(userName)
+        setupCardButtons()
+
     }
+    private fun setupWelcomeMessage(userName: String) {
+        val lblWelcomeMessage: TextView = findViewById(R.id.lblWelcomeMessage)
+        lblWelcomeMessage.text = "Welcome, $userName"
+    }
+
+    private fun setupCardButtons() {
+        val cvNewTimesheet: CardView = findViewById(R.id.CVNewTimesheet)
+        cvNewTimesheet.setOnClickListener {
+            //Navigate to new timesheet page
+        }
+
+        val cvCalendar: CardView = findViewById(R.id.CVCalendar)
+        cvCalendar.setOnClickListener {
+            //Navigate to Calander page
+        }
+
+        val cvActiveTimesheets: CardView = findViewById(R.id.CVActiveTimesheets)
+        cvActiveTimesheets.setOnClickListener {
+            //Navigate to Active timesheets page
+        }
+
+        val cvAnalytics: CardView = findViewById(R.id.CVAnalytics)
+        cvAnalytics.setOnClickListener {
+            //Navigate to analytics page
+        }
+    }
+
 }
+

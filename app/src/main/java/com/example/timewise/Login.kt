@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 
 class Login : AppCompatActivity() {
-    var loggedInUserName: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -50,7 +50,7 @@ class Login : AppCompatActivity() {
             val user = UserManager.findUser(email, password)
             if (user != null) {
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                loggedInUserName = user.name
+                UserData.loggedUserName = user.name
                 val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
                 finish()
@@ -59,4 +59,8 @@ class Login : AppCompatActivity() {
             }
         }
     }
+}
+
+object UserData {
+    var loggedUserName: String = ""
 }
