@@ -27,22 +27,21 @@
         app:layout_constraintBottom_toTopOf="@id/CVNewTimesheet"/>
 
 
-
     <androidx.cardview.widget.CardView
         android:id="@+id/CVNewTimesheet"
         android:layout_width="0dp"
         android:layout_height="75dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="#B378FE"
+        app:cardBackgroundColor="#C393FF"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@+id/lblWelcomeMessage"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/lblWelcomeMessage">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,15 +73,15 @@
         android:layout_width="0dp"
         android:layout_height="75dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="32dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="#99F14CFF"
+        app:cardBackgroundColor="#F68AFF"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/CVAnalytics">
 
         <LinearLayout
@@ -114,17 +113,16 @@
         android:layout_width="0dp"
         android:layout_height="75dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="32dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="#B57FFF60"
+        app:cardBackgroundColor="#A5FF90"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/CVNewTimesheet"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
+        app:layout_constraintTop_toBottomOf="@id/CVNewTimesheet">
 
 
         <LinearLayout
@@ -156,16 +154,16 @@
         android:layout_width="0dp"
         android:layout_height="75dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="32dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="#99FF5A5A"
+        app:cardBackgroundColor="#FF8383"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/CVActiveTimesheets"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/CVActiveTimesheets">
 
         <LinearLayout
             android:layout_width="match_parent"
