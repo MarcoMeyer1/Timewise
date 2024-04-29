@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide
 
 class Register : AppCompatActivity() {
 
-    private val users = mutableListOf<User>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,9 +58,9 @@ class Register : AppCompatActivity() {
             }
 
 
+
             val user = User(name, email, password)
-            //Save the newly registered user to the array
-            users.add(user)
+            UserManager.addUser(user)
             Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show()
 
             // Navigate to the Login Activity

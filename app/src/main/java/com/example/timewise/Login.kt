@@ -1,6 +1,10 @@
 package com.example.timewise
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -20,5 +24,38 @@ class Login : AppCompatActivity() {
         Glide.with(this)
             .load("https://drive.google.com/uc?export=view&id=1UIMVG78OboB96ra0KPrLa4D1risr4TW4")
             .into(findViewById(R.id.imgTimeWiseLogo))
+
+        val emailEditText: EditText = findViewById(R.id.txtLoginEmail)
+        val passwordEditText: EditText = findViewById(R.id.txtLoginPassword)
+        val loginButton: Button = findViewById(R.id.btnLogin)
+        val backToRegisterButton: Button = findViewById(R.id.btnBackToRegister)
+
+        backToRegisterButton.setOnClickListener {
+            val intent = Intent(this, Register::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+
+
+        loginButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter both email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val user = UserManager.findUser(email, password)
+            if (user != null) {
+                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, HomePage::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

@@ -62,7 +62,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextTextEmailAddress"
+            android:id="@+id/txtLoginEmail"
             android:layout_width="233dp"
             android:layout_height="64dp"
             android:layout_marginBottom="35dp"
@@ -72,14 +72,14 @@
             android:inputType="textEmailAddress"
             android:textColor="#FFFFFF"
             android:textColorHighlight="#FDFDFD"
-            app:layout_constraintBottom_toTopOf="@+id/editTextTextPassword"
+            app:layout_constraintBottom_toTopOf="@+id/txtLoginPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3"
             android:textColorHint="#FFFFFF"/>
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/txtLoginPassword"
             android:layout_width="230dp"
             android:layout_height="66dp"
             android:layout_marginBottom="42dp"
@@ -91,7 +91,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btnLogin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress"
+            app:layout_constraintTop_toBottomOf="@+id/txtLoginEmail"
             android:textColorHint="#FFFFFF"/>
 
         <Button
@@ -105,7 +105,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btnBackToRegister"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+            app:layout_constraintTop_toBottomOf="@+id/txtLoginPassword" />
 
         <Button
             android:id="@+id/btnBackToRegister"
