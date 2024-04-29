@@ -6,6 +6,175 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomePage">
-    <include layout="@layout/toolbar"/>
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar" />
+
+    <TextView
+        android:id="@+id/lblWelcomeMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="34sp"
+        tools:layout_editor_absoluteX="136dp"
+        tools:layout_editor_absoluteY="117dp" />
+
+
+    <!-- NEW                                                 CARD -->
+
+    <!-- NEW                                                 CARD -->
+
+    <!-- NEW                                                 CARD -->
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CVCalendar"
+        android:layout_width="317dp"
+        android:layout_height="75dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="#99F14CFF"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        tools:layout_editor_absoluteX="59dp"
+        tools:layout_editor_absoluteY="584dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Calendar"
+                android:textColor="#99000000"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:layout_width="59dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CVNewTimesheet"
+        android:layout_width="317dp"
+        android:layout_height="75dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="#B378FE"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        tools:layout_editor_absoluteX="59dp"
+        tools:layout_editor_absoluteY="201dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="New Timesheet"
+                android:textColor="#99000000"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:layout_width="59dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CVActiveTimesheets"
+        android:layout_width="317dp"
+        android:layout_height="75dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="#B57FFF60"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        tools:layout_editor_absoluteX="59dp"
+        tools:layout_editor_absoluteY="328dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Active Timesheets"
+                android:textColor="#99000000"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:layout_width="59dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CVAnalytics"
+        android:layout_width="317dp"
+        android:layout_height="75dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="#99FF5A5A"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        tools:layout_editor_absoluteX="59dp"
+        tools:layout_editor_absoluteY="456dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Analytics"
+                android:textColor="#99000000"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:layout_width="59dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    <!-- NEW                                                 CARD -->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
