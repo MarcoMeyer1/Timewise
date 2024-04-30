@@ -51,6 +51,7 @@ class Login : AppCompatActivity() {
             if (user != null) {
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
                 UserData.loggedUserName = user.name
+                UserData.loggedUserEmail = user.email
 
                 val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
@@ -64,5 +65,6 @@ class Login : AppCompatActivity() {
 
 object UserData {
     var loggedUserName: String = ""
+    var loggedUserEmail: String = ""
 
 }

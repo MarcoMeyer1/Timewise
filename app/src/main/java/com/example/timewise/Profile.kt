@@ -1,5 +1,6 @@
 package com.example.timewise
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -33,7 +34,8 @@ class Profile : BaseActivity() {
 
         val btnEditProfile: Button = findViewById(R.id.btnEditProfile)
         btnEditProfile.setOnClickListener {
-            // Handle Edit Profile button click
+            val intent = Intent(this, EditProfile::class.java)
+            startActivity(intent)
         }
 
         val btnManageTimesheets: Button = findViewById(R.id.btnManageTimesheets)

@@ -75,4 +75,4 @@ class Register : AppCompatActivity() {
     }
 }
 
-data class User(val name: String, val email: String, val password: String)
+data class User(var name: String, var email: String, var password: String)
