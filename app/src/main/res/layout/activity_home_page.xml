@@ -200,7 +200,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/increaseGraph"
+                android:src="@drawable/increase_graph"
                 android:alpha="0.5"
                 android:scaleType="fitEnd"
                 android:paddingEnd="15dp"
