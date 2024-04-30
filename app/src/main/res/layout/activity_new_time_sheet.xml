@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewTimeSheet">
+
+    <TextView
+        android:id="@+id/txtView2"
+        android:layout_width="214dp"
+        android:layout_height="21dp"
+        android:text="Create a new Timesheet"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="98dp"
+        tools:layout_editor_absoluteY="111dp" />
+
+    <EditText
+        android:id="@+id/Edit_txt_1"
+        android:layout_width="164dp"
+        android:layout_height="41dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Timesheet Name"
+        android:textSize="14sp"
+        tools:layout_editor_absoluteX="123dp"
+        tools:layout_editor_absoluteY="175dp" />
+
+    <Spinner
+        android:id="@+id/dropDownbox"
+        android:layout_width="311dp"
+        android:layout_height="22dp"
+        tools:layout_editor_absoluteX="62dp"
+        tools:layout_editor_absoluteY="246dp" />
+
+    <Button
+        android:id="@+id/btn_ColorSelecter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Color"
+        tools:layout_editor_absoluteX="143dp"
+        tools:layout_editor_absoluteY="301dp" />
+
+    <Button
+        android:id="@+id/btn_Createtimesheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create "
+        tools:layout_editor_absoluteX="158dp"
+        tools:layout_editor_absoluteY="389dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
