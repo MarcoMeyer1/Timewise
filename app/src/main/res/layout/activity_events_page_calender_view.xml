@@ -22,8 +22,12 @@
         android:layout_width="412dp"
         android:layout_height="300dp"
         android:background="#85EAE7E7"
-        tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="85dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.201" />
 
     <ImageView
         android:id="@+id/btnToolbarBack"
@@ -32,8 +36,12 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:src="@drawable/baseline_add_circle_24"
-        tools:layout_editor_absoluteX="351dp"
-        tools:layout_editor_absoluteY="655dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
 
     <TextView
         android:id="@+id/textView"
@@ -42,8 +50,11 @@
         android:text="Upcoming Events"
         android:textSize="30sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="88dp"
-        tools:layout_editor_absoluteY="395dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.56" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
