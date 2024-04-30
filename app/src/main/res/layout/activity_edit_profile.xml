@@ -55,6 +55,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Email"
+        android:enabled="false"
         android:layout_margin="40dp"
         android:inputType="textEmailAddress"
         android:padding="16dp"
