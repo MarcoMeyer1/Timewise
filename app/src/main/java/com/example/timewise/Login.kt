@@ -51,6 +51,7 @@ class Login : AppCompatActivity() {
             if (user != null) {
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
                 UserData.loggedUserName = user.name
+
                 val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
                 finish()
@@ -63,4 +64,5 @@ class Login : AppCompatActivity() {
 
 object UserData {
     var loggedUserName: String = ""
+
 }

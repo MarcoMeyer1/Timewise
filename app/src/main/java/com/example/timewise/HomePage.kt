@@ -34,8 +34,12 @@ class HomePage : BaseActivity() {
     }
     private fun setupWelcomeMessage(userName: String) {
         val lblWelcomeMessage: TextView = findViewById(R.id.lblWelcomeMessage)
-        lblWelcomeMessage.text = "Welcome, $userName"
+        // Split the userName string into parts based on spaces
+        val firstName = userName.split(" ").first()  // Takes the first part of the split string
+
+        lblWelcomeMessage.text = "Welcome, $firstName"
     }
+
 
     private fun setupCardButtons() {
         val cvNewTimesheet: CardView = findViewById(R.id.CVNewTimesheet)
