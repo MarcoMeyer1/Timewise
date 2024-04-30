@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/rounded_dialog_background"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etEventName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event Name"
+        android:paddingBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Start Date (dd/mm/yyyy)"
+        android:paddingBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Start Time"
+        android:paddingBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="End Date (dd/mm/yyyy)"
+        android:paddingBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etEndTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="End Time"
+        android:paddingBottom="16dp"/>
+
+    <Switch
+        android:id="@+id/switchAllDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="All Day Event"
+        android:paddingBottom="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerTimesheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/timesheet_options"
+        android:paddingBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnCreateEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Event"/>
+
+
+
+
+</LinearLayout>

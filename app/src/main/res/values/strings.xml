@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">TimeWise</string>
+    <string-array name="timesheet_options">
+        <item>Social</item>
+        <item>Work</item>
+        <item>School</item>
+        <item>Sport</item>
+    </string-array>
 </resources>
