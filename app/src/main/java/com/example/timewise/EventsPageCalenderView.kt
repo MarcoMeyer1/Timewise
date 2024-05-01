@@ -24,6 +24,7 @@ class EventsPageCalenderView : BaseActivity() {
     private var endDate: Calendar? = null
     private var selectedPhotoPath: String? = null
     private val PICK_PHOTO_REQUEST = 1
+    private var calendar: Calendar = Calendar.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_events_page_calender_view)
@@ -50,12 +51,12 @@ class EventsPageCalenderView : BaseActivity() {
             val btnCreateEvent = popupView.findViewById<Button>(R.id.btnCreateEvent)
 
             btnStartDate.setOnClickListener {
-                showDateTimePickerDialog(btnStartDate)
+                showDateTimePickerDialog(this@EventsPageCalenderView, btnStartDate)
 
             }
 
             btnEndDate.setOnClickListener {
-                showDateTimePickerDialog(btnEndDate)
+                showTimePickerDialog(this@EventsPageCalenderView, btnEndDate, calendar)
             }
 
             btnAddPhoto.setOnClickListener {
@@ -67,7 +68,7 @@ class EventsPageCalenderView : BaseActivity() {
                 val eventName = txtEventName.toString()
                 val allDay = allDaySwitch.isChecked
                 val category = categorySpinner.selectedItem.toString()
-                val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, photo)
+                val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedPhotoPath)
 
             }
 
@@ -91,17 +92,16 @@ class EventsPageCalenderView : BaseActivity() {
 
 }
 
-private fun showDateTimePickerDialog(dateButton: Button) {
+private fun showDateTimePickerDialog(context: Context, dateButton: Button) {
     val calendar = Calendar.getInstance()
 
     val datePickerDialog = DatePickerDialog(
-        this,
-        DatePickerDialog.OnDateSetListener { _, year, month, day ->
+        context, // use context instead of this
+        { _, year, month, day ->  // This lambda function is the DatePickerDialog.OnDateSetListener
             calendar.set(Calendar.YEAR, year)
             calendar.set(Calendar.MONTH, month)
             calendar.set(Calendar.DAY_OF_MONTH, day)
-
-            showTimePickerDialog(dateButton, calendar)
+            showTimePickerDialog(context, dateButton, calendar)
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -111,9 +111,9 @@ private fun showDateTimePickerDialog(dateButton: Button) {
     datePickerDialog.show()
 }
 
-    private fun showTimePickerDialog(dateButton: Button, calendar: Calendar) {
-        val timePickerDialog = TimePickerDialog(
-            this,
+
+private fun showTimePickerDialog(context: Context, dateButton: Button, calendar: Calendar) {
+    val timePickerDialog = TimePickerDialog(context,
             TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minute)
