@@ -1,0 +1,131 @@
+package com.example.timewise
+
+import android.app.AlertDialog
+import android.graphics.Color
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.flask.colorpicker.ColorPickerView
+
+class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditListener{
+
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: TimesheetAdapter
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_active_timesheets_page)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+
+        setupRecyclerView()
+        initializeDummyData()
+
+    }
+    override fun onEditClicked(timesheet: Timesheet) {
+        showEditDialog(timesheet)
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView = findViewById(R.id.recyclerView_timesheets)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = TimesheetAdapter(TimesheetManager.timesheets, this)
+        recyclerView.adapter = adapter
+    }
+    fun initializeDummyData() {
+        val dummyTimesheets = listOf(
+            Timesheet(1, "Social", "#FFD700"),
+            Timesheet(2, "General", "#FF4500"),
+            Timesheet(3, "School", "#1E90FF"),
+            Timesheet(4, "Work", "#32CD32"),
+            Timesheet(5, "Exercise", "#FF1493"),
+            Timesheet(6, "Hobbies", "#FFA500")
+        )
+        TimesheetManager.addAllTimesheets(dummyTimesheets)
+    }
+
+    fun showEditDialog(timesheet: Timesheet) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_timesheet_dialog, null)
+        val nameEditText: EditText = dialogView.findViewById(R.id.editName)
+        val colorPickerView: ColorPickerView = dialogView.findViewById(R.id.colorPicker)
+
+        nameEditText.setText(timesheet.name)
+        colorPickerView.setInitialColor(Color.parseColor(timesheet.colorHex), true)
+
+        AlertDialog.Builder(this)
+            .setTitle("Edit Timesheet")
+            .setView(dialogView)
+            .setPositiveButton("Save") { dialog, which ->
+                val newName = nameEditText.text.toString()
+                val newColor = "#" + Integer.toHexString(colorPickerView.selectedColor).substring(2)
+                val updatedTimesheet = timesheet.copy(name = newName, colorHex = newColor)
+                updateTimesheet(updatedTimesheet)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    fun updateTimesheet(updatedTimesheet: Timesheet) {
+        val index = TimesheetManager.timesheets.indexOfFirst { it.id == updatedTimesheet.id }
+        if (index != -1) {
+            TimesheetManager.timesheets[index] = updatedTimesheet
+            adapter.notifyItemChanged(index)
+        } else {
+            Log.d("UpdateTimesheet", "Timesheet not found for update")
+        }
+    }
+
+}
+
+class TimesheetAdapter(
+    private val timesheets: List<Timesheet>,
+    private val onEditListener: OnTimesheetEditListener
+) : RecyclerView.Adapter<TimesheetAdapter.TimesheetViewHolder>() {
+    interface OnTimesheetEditListener {
+        fun onEditClicked(timesheet: Timesheet)
+    }
+    class TimesheetViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView) {
+        val nameTextView: TextView = cardView.findViewById(R.id.timesheet_name)
+        val editButton: ImageView = cardView.findViewById(R.id.btnEdit)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimesheetViewHolder {
+        val cardView = LayoutInflater.from(parent.context).inflate(R.layout.timesheet_card, parent, false) as CardView
+        return TimesheetViewHolder(cardView)
+    }
+
+    override fun onBindViewHolder(holder: TimesheetViewHolder, position: Int) {
+        val timesheet = timesheets[position]
+        holder.nameTextView.text = timesheet.name
+        holder.cardView.setCardBackgroundColor(Color.parseColor(timesheet.colorHex))
+        holder.editButton.setOnClickListener {
+            onEditListener.onEditClicked(timesheet)
+        }
+    }
+
+    override fun getItemCount() = timesheets.size
+
+
+}
+
+

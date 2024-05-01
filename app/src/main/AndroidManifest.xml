@@ -27,6 +27,9 @@
             android:name=".HomePage"
             android:exported="false" />
         <activity
+            android:name=".ActiveTimesheetsPage"
+            android:exported="false" />
+        <activity
             android:name=".Login"
             android:exported="true">
             <intent-filter>

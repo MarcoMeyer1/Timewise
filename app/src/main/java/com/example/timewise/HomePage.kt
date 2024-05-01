@@ -55,7 +55,8 @@ class HomePage : BaseActivity() {
 
         val cvActiveTimesheets: CardView = findViewById(R.id.CVActiveTimesheets)
         cvActiveTimesheets.setOnClickListener {
-            //Navigate to Active timesheets page
+            val intent = Intent(this, ActiveTimesheetsPage::class.java)
+            startActivity(intent)
         }
 
         val cvAnalytics: CardView = findViewById(R.id.CVAnalytics)
