@@ -1,6 +1,7 @@
 package com.example.timewise
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -17,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.flask.colorpicker.ColorPickerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditListener{
 
@@ -39,12 +42,22 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
 
 
         setupRecyclerView()
-        initializeDummyData()
+       // initializeDummyData()
+
+
+        val fab: FloatingActionButton = findViewById(R.id.fab_add_timesheet)
+        fab.setOnClickListener {
+            val intent = Intent(this, NewTimesheet::class.java)
+            startActivity(intent)
+            finish()
+        }
 
     }
     override fun onEditClicked(timesheet: Timesheet) {
         showEditDialog(timesheet)
     }
+
+
 
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView_timesheets)

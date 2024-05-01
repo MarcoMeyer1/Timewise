@@ -1,10 +1,13 @@
 package com.example.timewise
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -12,7 +15,7 @@ import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 
 class NewTimesheet : BaseActivity() {
-    private lateinit var selectedCategory: String
+    private lateinit var timesheetNameEditText: EditText
     private var selectedColorHex: String = "#FFFFFF" // Default white color
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,44 +28,46 @@ class NewTimesheet : BaseActivity() {
             insets
         }
 
-        val spinner: Spinner = findViewById(R.id.dropdownCategory)
-        val button: Button = findViewById(R.id.btnSelectColor)
-        val confirmButton: Button = findViewById(R.id.btnCreateNewTimesheet)
 
-        // Setup spinner with adapter
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.dropdown_items,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
-        }
+        timesheetNameEditText = findViewById(R.id.txtNewTimesheetName)
+        val buttonSelectColor: Button = findViewById(R.id.btnSelectColor)
+        val buttonCreate: Button = findViewById(R.id.btnCreateNewTimesheet)
+
 
         // Setup color picker button
-        button.setOnClickListener {
+        // Setup color picker dialog
+        buttonSelectColor.setOnClickListener {
             ColorPickerDialogBuilder
                 .with(this)
                 .setTitle("Choose color")
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)
-                .setPositiveButton("ok") { dialog, selectedColor, allColors ->
-                    // Save selected color in hexadecimal format
+                .setPositiveButton("OK") { dialog, selectedColor, allColors ->
                     selectedColorHex = String.format("#%06X", 0xFFFFFF and selectedColor)
-                    // Change the button background color to the selected color
-                    button.setBackgroundColor(selectedColor)
+                    buttonSelectColor.setBackgroundColor(selectedColor)
                 }
-                .setNegativeButton("cancel") { dialog, which -> }
+                .setNegativeButton("Cancel", null)
                 .build()
                 .show()
         }
 
-        // Confirm button action
-        confirmButton.setOnClickListener {
-            // Get selected item from spinner
-            selectedCategory = spinner.selectedItem.toString()
-            // Here you can use `selectedCategory` and `selectedColorHex` for further actions
-            // For example, save to a database or send through an API
+
+        // Setup the create button
+        buttonCreate.setOnClickListener {
+            val timesheetName = timesheetNameEditText.text.toString()
+            if (timesheetName.isNotEmpty()) {
+                val newTimesheet = Timesheet(
+                    id = TimesheetManager.timesheets.size + 1,  // Generate a new ID
+                    name = timesheetName,
+                    colorHex = selectedColorHex
+                )
+                TimesheetManager.addTimesheet(newTimesheet)
+                val intent = Intent(this, ActiveTimesheetsPage::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -18,93 +18,78 @@
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="42dp"
-        android:layout_marginEnd="42dp"
-        android:layout_marginBottom="588dp"
+        android:layout_width="334dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="41dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="26dp"
         android:text="Create a new Timesheet"
         android:textColor="#000000"
         android:textSize="24sp"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/purpleConstraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include2" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/purpleConstraintLayout"
-        android:layout_width="wrap_content"
-        android:paddingTop="20dp"
+        android:layout_width="302dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="149dp"
+        android:background="@drawable/purple_rounded_background"
         android:paddingLeft="40dp"
+        android:paddingTop="20dp"
         android:paddingRight="40dp"
         android:paddingBottom="20dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/purple_rounded_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.837">
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
 
         <Button
             android:id="@+id/btnCreateNewTimesheet"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="34dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="88dp"
             android:backgroundTint="#92D050"
             android:text="Create"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dropdownCategory" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btnSelectColor"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="150dp"
             android:backgroundTint="#FFFFFF"
             android:text="Select Color"
             android:textColor="#000000"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.606" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/txtNewTimesheetName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="52dp"
-            android:layout_marginBottom="60dp"
+
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="110dp"
             android:backgroundTint="#FFFFFF"
             android:ems="10"
             android:hint="Timesheet Name"
             android:inputType="text"
             android:textColor="#FFFFFF"
             android:textColorHint="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/dropdownCategory"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintBottom_toTopOf="@+id/btnSelectColor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Spinner
-            android:id="@+id/dropdownCategory"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="210dp"
-            android:background="#FFFFFF"
-            android:padding="10dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnCreateNewTimesheet"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtNewTimesheetName" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
