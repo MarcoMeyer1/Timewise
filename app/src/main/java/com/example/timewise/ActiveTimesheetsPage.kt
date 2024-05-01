@@ -34,15 +34,16 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_active_timesheets_page)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-
+        updateToolbarColor("#70F541")
         setupRecyclerView()
-       // initializeDummyData()
+        initializeDummyData()
 
 
         val fab: FloatingActionButton = findViewById(R.id.fab_add_timesheet)

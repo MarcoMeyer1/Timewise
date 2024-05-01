@@ -28,7 +28,7 @@ class NewTimesheet : BaseActivity() {
             insets
         }
 
-
+        updateToolbarColor("#B378FE")
         timesheetNameEditText = findViewById(R.id.txtNewTimesheetName)
         val buttonSelectColor: Button = findViewById(R.id.btnSelectColor)
         val buttonCreate: Button = findViewById(R.id.btnCreateNewTimesheet)

@@ -5,6 +5,7 @@
     android:background="@android:color/holo_blue_light">
 
     <RelativeLayout
+        android:id="@+id/toolbarColorBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#4C90E1"

@@ -4,9 +4,14 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 open class BaseActivity : AppCompatActivity() {
+    private var toolbarContainer: RelativeLayout? = null
+
+
 
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
@@ -33,6 +38,19 @@ open class BaseActivity : AppCompatActivity() {
             val homeIntent = Intent(this, HomePage::class.java)
             homeIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(homeIntent)
+        }
+
+
+    }
+    fun updateToolbarColor(hexCode: String) {
+       toolbarContainer = findViewById(R.id.toolbarColorBar)
+        try {
+            val color = Color.parseColor(hexCode)
+         toolbarContainer?.setBackgroundColor(color)
+
+        } catch (e: IllegalArgumentException) {
+
+            e.printStackTrace()
         }
     }
 }
