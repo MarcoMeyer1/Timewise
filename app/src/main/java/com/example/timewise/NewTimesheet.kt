@@ -1,15 +1,20 @@
 package com.example.timewise
 
-
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-
+import com.flask.colorpicker.ColorPickerView
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 
 class NewTimesheet : BaseActivity() {
+    private lateinit var selectedCategory: String
+    private var selectedColorHex: String = "#FFFFFF" // Default white color
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,17 +26,43 @@ class NewTimesheet : BaseActivity() {
         }
 
         val spinner: Spinner = findViewById(R.id.dropdownCategory)
+        val button: Button = findViewById(R.id.btnSelectColor)
+        val confirmButton: Button = findViewById(R.id.btnCreateNewTimesheet)
 
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        // Setup spinner with adapter
         ArrayAdapter.createFromResource(
             this,
             R.array.dropdown_items,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
             spinner.adapter = adapter
+        }
+
+        // Setup color picker button
+        button.setOnClickListener {
+            ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Choose color")
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .density(12)
+                .setPositiveButton("ok") { dialog, selectedColor, allColors ->
+                    // Save selected color in hexadecimal format
+                    selectedColorHex = String.format("#%06X", 0xFFFFFF and selectedColor)
+                    // Change the button background color to the selected color
+                    button.setBackgroundColor(selectedColor)
+                }
+                .setNegativeButton("cancel") { dialog, which -> }
+                .build()
+                .show()
+        }
+
+        // Confirm button action
+        confirmButton.setOnClickListener {
+            // Get selected item from spinner
+            selectedCategory = spinner.selectedItem.toString()
+            // Here you can use `selectedCategory` and `selectedColorHex` for further actions
+            // For example, save to a database or send through an API
         }
     }
 }
