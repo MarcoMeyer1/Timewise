@@ -44,7 +44,8 @@ class HomePage : BaseActivity() {
     private fun setupCardButtons() {
         val cvNewTimesheet: CardView = findViewById(R.id.CVNewTimesheet)
         cvNewTimesheet.setOnClickListener {
-            //Navigate to new timesheet page
+            val intent = Intent(this, NewTimesheet::class.java)
+            startActivity(intent)
         }
 
         val cvCalendar: CardView = findViewById(R.id.CVCalendar)
