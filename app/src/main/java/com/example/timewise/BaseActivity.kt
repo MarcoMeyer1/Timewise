@@ -1,6 +1,5 @@
 package com.example.timewise
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.widget.ImageView
@@ -14,7 +13,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val toolbarBack: ImageView? = findViewById(R.id.btnToolbarBack)
+        val toolbarBack: ImageView? = findViewById(R.id.imgAddEvent)
         val toolbarProfile: ImageView? = findViewById(R.id.imgToolbarProfile)
         val toolbarHome: ImageView? = findViewById(R.id.imgToolbarLogo)
 

@@ -3,65 +3,60 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/rounded_dialog_background"
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/etEventName"
+        android:id="@+id/txtEventName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Event Name"
-        android:paddingBottom="16dp"/>
+        android:hint="Event Name"/>
 
-    <EditText
-        android:id="@+id/etStartDate"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Date (dd/mm/yyyy)"
-        android:paddingBottom="16dp"/>
+        android:text="Start Date"/>
 
-    <EditText
-        android:id="@+id/etStartTime"
+    <Button
+        android:id="@+id/btnStartDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Time"
-        android:paddingBottom="16dp"/>
+        android:text="Select Start Date"/>
 
-    <EditText
-        android:id="@+id/etEndDate"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="End Date (dd/mm/yyyy)"
-        android:paddingBottom="16dp"/>
+        android:text="End Date"/>
 
-    <EditText
-        android:id="@+id/etEndTime"
+
+
+    <Button
+        android:id="@+id/btnEndDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="End Time"
-        android:paddingBottom="16dp"/>
+        android:text="Select End Date"/>
 
     <Switch
-        android:id="@+id/switchAllDay"
+        android:id="@+id/allDaySwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="All Day Event"
-        android:paddingBottom="16dp"/>
+        android:text="All Day"/>
 
     <Spinner
-        android:id="@+id/spinnerTimesheet"
+        android:id="@+id/categorySpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/timesheet_options"
-        android:paddingBottom="16dp"/>
+        android:entries="@array/event_categories"/>
+
+    <Button
+        android:id="@+id/btnAddPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Photo"/>
 
     <Button
         android:id="@+id/btnCreateEvent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create Event"/>
-
-
-
 
 </LinearLayout>
