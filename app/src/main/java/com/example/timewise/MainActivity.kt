@@ -1,5 +1,6 @@
 package com.example.timewise
 
+import android.content.Intent
 import com.example.timewise.R
 import android.os.Bundle
 import android.widget.Button
@@ -17,7 +18,8 @@ class MainActivity : AppCompatActivity() {
         val btnCalendar = findViewById<Button>(R.id.btnCalendar)
 
         btnCalendar.setOnClickListener {
-            setContentView(R.layout.activity_events_page_calender_view)
+            val intent = Intent(this, EventsCalenderView::class.java)
+            startActivity(intent)
         }
     }
 

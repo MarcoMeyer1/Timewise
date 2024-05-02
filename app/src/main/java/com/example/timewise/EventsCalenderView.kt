@@ -8,19 +8,24 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
-import android.net.Uri
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.PopupWindow
+import android.widget.Spinner
+import android.widget.Switch
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.math.log
+import java.util.Calendar
+import java.util.Locale
 
-class EventsPageCalenderView : BaseActivity() {
+class EventsCalenderView : AppCompatActivity() {
 
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
@@ -29,13 +34,16 @@ class EventsPageCalenderView : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_events_page_calender_view)
-
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_events_calender_view)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         val btnAddEvent: Button = findViewById(R.id.btnAddEvent)
         btnAddEvent.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            Log.d("EventButton", "BUTTON CLICKED")
+
             EventCreationDialogFragment().show(supportFragmentManager, "createEvent")
         }
     }
@@ -73,30 +81,37 @@ class EventsPageCalenderView : BaseActivity() {
         }
 
         btnCreateEvent.setOnClickListener {
-            val eventName = txtEventName.text.toString()
-            val allDay = allDaySwitch.isChecked
-            val category = categorySpinner.selectedItem.toString()
-            // Assuming that both startDate and endDate have been set by date pickers
-            val timesheetEntry = TimesheetEntry(
-                eventName,
-                startDate!!,
-                endDate!!,
-                allDay,
-                category,
-                selectedPhotoPath
-            )
+            val eventName = txtEventName?.text.toString()
+            val allDay = allDaySwitch?.isChecked ?: false
+            val category = categorySpinner?.selectedItem.toString()
 
-            // Dummy data insertion, replace with actual data handling logic as needed
-            val dummyTimesheet = TimesheetRepository.getDummyTimesheet()
-            TimesheetManager.addTimesheetEntry(dummyTimesheet.id, timesheetEntry)
+            // Check if start and end dates are set
+            if (startDate != null && endDate != null) {
+                val timesheetEntry = TimesheetEntry(
+                    eventName,
+                    startDate!!,
+                    endDate!!,
+                    allDay,
+                    category,
+                    selectedPhotoPath
+                )
 
-            // Provide feedback to the user that the event was created successfully
-            Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show()
+                // Assuming TimesheetManager and repository are correctly implemented and accessible
+                val dummyTimesheet = TimesheetRepository.getDummyTimesheet()
+                TimesheetManager.addTimesheetEntry(dummyTimesheet.id, timesheetEntry)
 
-            // Dismiss the popup or dialog after creating the event
-            popupWindow.dismiss()
+                // Show toast in activity context
+                Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show()
+
+
+            } else {
+                // Show error toast if dates are not set
+                Toast.makeText(this, "Please set both start and end dates", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
+
 
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

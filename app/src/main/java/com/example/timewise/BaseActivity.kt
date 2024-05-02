@@ -13,7 +13,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val toolbarBack: ImageView? = findViewById(R.id.imgAddEvent)
+        val toolbarBack: ImageView? = findViewById(R.id.btnToolbarBack)
         val toolbarProfile: ImageView? = findViewById(R.id.imgToolbarProfile)
         val toolbarHome: ImageView? = findViewById(R.id.imgToolbarLogo)
 
