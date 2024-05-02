@@ -61,7 +61,8 @@ class HomePage : BaseActivity() {
 
         val cvAnalytics: CardView = findViewById(R.id.CVAnalytics)
         cvAnalytics.setOnClickListener {
-            //Navigate to analytics page
+            val intent = Intent(this, Analytics::class.java)
+            startActivity(intent)
         }
     }
 

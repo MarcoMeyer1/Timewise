@@ -57,4 +57,5 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.google.android.material:material:1.5.0")
     implementation("com.github.QuadFlask:colorpicker:0.0.15")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
