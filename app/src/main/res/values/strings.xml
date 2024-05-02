@@ -1,5 +1,5 @@
 <resources>
-    <string-array name="timesheet_options">
+    <string-array name="category_options">
         <item>Social</item>
         <item>Work</item>
         <item>School</item>

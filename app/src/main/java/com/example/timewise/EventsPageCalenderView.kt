@@ -2,10 +2,13 @@ package com.example.timewise
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.content.Context
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -20,6 +23,10 @@ import java.util.*
 
 class EventsPageCalenderView : BaseActivity() {
 
+
+
+    private lateinit var timelineRecyclerView: RecyclerView
+
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
     private var selectedPhotoPath: String? = null
@@ -31,6 +38,7 @@ class EventsPageCalenderView : BaseActivity() {
 
         val imgAddEvent = findViewById<ImageView>(R.id.imgAddEvent)
         imgAddEvent.setOnClickListener {
+            Log.d("ImageView", "ImageView clicked")
             val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_layout, null)
 
@@ -65,15 +73,21 @@ class EventsPageCalenderView : BaseActivity() {
             }
 
             btnCreateEvent.setOnClickListener {
-                val eventName = txtEventName.toString()
+                val eventName = txtEventName.text.toString()
                 val allDay = allDaySwitch.isChecked
                 val category = categorySpinner.selectedItem.toString()
                 val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedPhotoPath)
 
+                val dummyTimesheet = TimesheetRepository.getDummyTimesheet()
+
+                val dummyTimesheetId = dummyTimesheet.id
+
+                TimesheetManager.addTimesheetEntry(dummyTimesheetId, timesheetEntry)
+
+
+                popupWindow.dismiss()
+
             }
-
-
-
 
 
             popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
@@ -113,19 +127,20 @@ private fun showDateTimePickerDialog(context: Context, dateButton: Button) {
 
 
 private fun showTimePickerDialog(context: Context, dateButton: Button, calendar: Calendar) {
-    val timePickerDialog = TimePickerDialog(context,
-            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minute)
+    val timePickerDialog = TimePickerDialog(
+        context,
+        TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            calendar.set(Calendar.MINUTE, minute)
 
-                val formattedDateTime = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
-                dateButton.text = formattedDateTime
-            },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            true
-        )
+            val formattedDateTime = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
+            dateButton.text = formattedDateTime
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true
+    )
 
-        timePickerDialog.show()
-    }
+    timePickerDialog.show()
+}
 
