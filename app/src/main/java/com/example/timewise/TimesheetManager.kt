@@ -1,5 +1,7 @@
 package com.example.timewise
 
+import java.util.Calendar
+
 object TimesheetManager {
     var timesheets: MutableList<Timesheet> = mutableListOf()
 
@@ -23,6 +25,10 @@ data class Timesheet(
 
 // TimesheetEntry data class
 data class TimesheetEntry(
-    val description: String,
-    val hours: Int
+    val name: String,
+    val startDate: Calendar,
+    val endDate: Calendar,
+    val isAllDay: Boolean,
+    val category: String?,
+    val photo: String?
 )

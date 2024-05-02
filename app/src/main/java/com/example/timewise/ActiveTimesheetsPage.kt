@@ -41,7 +41,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
             insets
         }
 
-        updateToolbarColor("#70F541")
+        updateToolbarColor("#5ECB35")
         setupRecyclerView()
         initializeDummyData()
 

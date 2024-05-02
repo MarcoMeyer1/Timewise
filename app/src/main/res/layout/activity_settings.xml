@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Settings">
+
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/minHoursLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Minimum Daily Hours"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"/>
+
+    <EditText
+        android:id="@+id/minHoursEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter minimum hours"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/minHoursLabel"
+        app:layout_constraintStart_toStartOf="@id/minHoursLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/maxHoursLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Maximum Daily Hours"
+        app:layout_constraintTop_toBottomOf="@id/minHoursEditText"
+        app:layout_constraintStart_toStartOf="@id/minHoursEditText"
+        android:layout_marginTop="12dp"/>
+
+    <EditText
+        android:id="@+id/maxHoursEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter maximum hours"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/maxHoursLabel"
+        app:layout_constraintStart_toStartOf="@id/maxHoursLabel"
+        app:layout_constraintEnd_toEndOf="@id/minHoursEditText"
+        android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        app:layout_constraintTop_toBottomOf="@id/maxHoursEditText"
+        app:layout_constraintEnd_toEndOf="@id/maxHoursEditText"
+        app:layout_constraintStart_toStartOf="@id/maxHoursEditText"
+        android:layout_marginTop="24dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -75,4 +75,8 @@ class Register : AppCompatActivity() {
     }
 }
 
-data class User(var name: String, var email: String, var password: String)
+data class User(
+    var name: String,
+    var email: String,
+    var password: String
+)

@@ -2,6 +2,7 @@ package com.example.timewise
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Html
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -28,7 +29,7 @@ class Login : AppCompatActivity() {
         val passwordEditText: EditText = findViewById(R.id.txtLoginPassword)
         val loginButton: Button = findViewById(R.id.btnLogin)
         val backToRegisterButton: Button = findViewById(R.id.btnBackToRegister)
-
+        backToRegisterButton.text = Html.fromHtml("<u>Don't have an account? Register Now</u>")
 
         backToRegisterButton.setOnClickListener {
             val intent = Intent(this, Register::class.java)

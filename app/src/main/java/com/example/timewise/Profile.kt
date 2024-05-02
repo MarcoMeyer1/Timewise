@@ -41,7 +41,8 @@ class Profile : BaseActivity() {
 
         val btnManageTimesheets: Button = findViewById(R.id.btnManageTimesheets)
         btnManageTimesheets.setOnClickListener {
-            // Handle Manage Timesheets button click
+            val intent = Intent(this, ActiveTimesheetsPage::class.java)
+            startActivity(intent)
         }
 
         val btnPrivacyPolicy: Button = findViewById(R.id.btnPrivacyPolicy)
@@ -51,7 +52,8 @@ class Profile : BaseActivity() {
 
         val btnSettings: Button = findViewById(R.id.btnSettings)
         btnSettings.setOnClickListener {
-            // Handle Settings button click
+            val intent = Intent(this, Settings::class.java)
+            startActivity(intent)
         }
 
         val btnLogOut: Button = findViewById(R.id.btnLogOut)

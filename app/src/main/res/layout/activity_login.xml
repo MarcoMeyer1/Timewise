@@ -110,9 +110,10 @@
 
         <Button
             android:id="@+id/btnBackToRegister"
-            android:layout_width="203dp"
-            android:layout_height="59dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="17dp"
+            android:background="#00FFFFFF"
             android:backgroundTint="#00FFFFFF"
             android:text="Don't have an account? Register Now"
             app:layout_constraintBottom_toBottomOf="parent"
