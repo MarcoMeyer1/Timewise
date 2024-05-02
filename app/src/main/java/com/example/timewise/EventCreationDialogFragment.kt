@@ -14,6 +14,7 @@ import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
@@ -28,6 +29,22 @@ class EventCreationDialogFragment : DialogFragment() {
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
     private var selectedImageUri: Uri? = null
+
+    // Declare the launcher as an instance variable
+    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Initialize the launcher here
+        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                selectedImageUri = uri
+                Log.d("PhotoPicker", "Selected URI: $uri")
+            } else {
+                Log.d("PhotoPicker", "No media selected")
+            }
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
@@ -67,14 +84,7 @@ class EventCreationDialogFragment : DialogFragment() {
     }
 
     private fun openPhotoPicker() {
-        val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            if (uri != null) {
-                selectedImageUri = uri
-                Log.d("PhotoPicker", "Selected URI: $uri")
-            } else {
-                Log.d("PhotoPicker", "No media selected")
-            }
-        }
+        // Simply launch the picker using the already initialized launcher
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
