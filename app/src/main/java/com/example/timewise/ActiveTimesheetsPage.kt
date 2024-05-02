@@ -26,7 +26,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TimesheetAdapter
-
+    var useDummy: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -43,7 +43,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
 
         updateToolbarColor("#5ECB35")
         setupRecyclerView()
-        initializeDummyData()
+        initializeData()
 
 
         val fab: FloatingActionButton = findViewById(R.id.fab_add_timesheet)
@@ -66,15 +66,14 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
         adapter = TimesheetAdapter(TimesheetManager.timesheets, this)
         recyclerView.adapter = adapter
     }
+
+    fun initializeData() {
+        if (useDummy) {
+            initializeDummyData()
+        }
+    }
     fun initializeDummyData() {
-        val dummyTimesheets = listOf(
-            Timesheet(1, "Social", "#FFD700"),
-            Timesheet(2, "General", "#FF4500"),
-            Timesheet(3, "School", "#1E90FF"),
-            Timesheet(4, "Work", "#32CD32"),
-            Timesheet(5, "Exercise", "#FF1493"),
-            Timesheet(6, "Hobbies", "#FFA500")
-        )
+        var dummyTimesheets = TimesheetManager.getDummyTimesheets()
         TimesheetManager.addAllTimesheets(dummyTimesheets)
     }
 
