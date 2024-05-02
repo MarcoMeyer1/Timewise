@@ -1,6 +1,7 @@
 package com.example.timewise
 
 import java.util.Calendar
+import android.net.Uri
 
 object TimesheetManager {
     var timesheets: MutableList<Timesheet> = mutableListOf()
@@ -40,7 +41,7 @@ data class TimesheetEntry(
     val endDate: Calendar,
     val isAllDay: Boolean,
     val category: String?,
-    val photo: String?
+    val photo: Uri?
 )
 
 object TimesheetRepository {

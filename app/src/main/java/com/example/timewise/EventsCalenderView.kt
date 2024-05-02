@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.net.Uri
 import android.widget.Button
 import android.widget.EditText
 import android.widget.PopupWindow
@@ -18,6 +19,8 @@ import android.widget.Spinner
 import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,10 +30,9 @@ import java.util.Locale
 
 class EventsCalenderView : AppCompatActivity() {
 
+    private lateinit var selectedImageUri: Uri
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
-    private var selectedPhotoPath: String? = null
-    private val PICK_PHOTO_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,17 +77,17 @@ class EventsCalenderView : AppCompatActivity() {
         }
 
         btnAddPhoto.setOnClickListener {
-            val pickPhotoIntent =
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(pickPhotoIntent, PICK_PHOTO_REQUEST)
+            openPhotoPicker()
         }
 
         btnCreateEvent.setOnClickListener {
             val eventName = txtEventName?.text.toString()
             val allDay = allDaySwitch?.isChecked ?: false
             val category = categorySpinner?.selectedItem.toString()
+            val imageUri = selectedImageUri
 
-            // Check if start and end dates are set
+
+
             if (startDate != null && endDate != null) {
                 val timesheetEntry = TimesheetEntry(
                     eventName,
@@ -93,19 +95,16 @@ class EventsCalenderView : AppCompatActivity() {
                     endDate!!,
                     allDay,
                     category,
-                    selectedPhotoPath
+                    imageUri
                 )
 
-                // Assuming TimesheetManager and repository are correctly implemented and accessible
                 val dummyTimesheet = TimesheetRepository.getDummyTimesheet()
                 TimesheetManager.addTimesheetEntry(dummyTimesheet.id, timesheetEntry)
 
-                // Show toast in activity context
                 Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show()
 
 
             } else {
-                // Show error toast if dates are not set
                 Toast.makeText(this, "Please set both start and end dates", Toast.LENGTH_SHORT)
                     .show()
             }
@@ -113,12 +112,22 @@ class EventsCalenderView : AppCompatActivity() {
     }
 
 
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_PHOTO_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            selectedPhotoPath = data.data?.toString()
+
+    private fun openPhotoPicker() {
+
+        val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+
+            if (uri != null) {
+                selectedImageUri = uri
+                Log.d("PhotoPicker", "Selected URI: $uri")
+            } else {
+                Log.d("PhotoPicker", "No media selected")
+            }
         }
+
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
+
 
     private fun showDateTimePickerDialog(context: Context, isStartDate: Boolean, dateButton: Button) {
         val calendar = if (isStartDate) startDate ?: Calendar.getInstance() else endDate ?: Calendar.getInstance()
@@ -148,3 +157,5 @@ class EventsCalenderView : AppCompatActivity() {
         ).show()
     }
 }
+
+

@@ -17,9 +17,7 @@
         <activity
             android:name=".EventsCalenderView"
             android:exported="false" />
-        <activity
-            android:name=".EventsPageCalenderView"
-            android:exported="false" />
+
         <activity
             android:name=".EventsPageTimeline"
             android:exported="false" />
