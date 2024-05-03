@@ -25,7 +25,8 @@ class EventsCalenderView : BaseActivity() {
     private fun setupUI() {
         calendarView = findViewById(R.id.calendarView)
         recyclerView = findViewById(R.id.timelineRecyclerView)
-        adapter = TimeSheetAdapter(emptyList())  // Initialize with an empty list
+        // Initialize with an empty mutable list
+        adapter = TimeSheetAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -44,7 +45,7 @@ class EventsCalenderView : BaseActivity() {
 
     private fun loadTimesheets() {
         val timesheets = TimesheetManager.getDummyTimesheets()  // Fetch timesheets
-        adapter.timesheets = timesheets  // Update the adapter's timesheets list
+        adapter.updateTimesheets(timesheets)  // Use the new method to update timesheets
         updateEntries(Calendar.getInstance())  // Update entries for today
     }
 

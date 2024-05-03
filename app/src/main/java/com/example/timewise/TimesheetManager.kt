@@ -1,6 +1,7 @@
 package com.example.timewise
 
 import android.net.Uri
+import android.util.Log
 import java.util.Calendar
 
 object TimesheetManager {
@@ -16,7 +17,11 @@ object TimesheetManager {
 
     fun addTimesheetEntry(timesheetId: Int, timesheetEntry: TimesheetEntry) {
         val timesheet = timesheets.find { it.id == timesheetId }
-        timesheet?.entries?.add(timesheetEntry)
+        if (timesheet == null) {
+            Log.e("TimesheetManager", "No timesheet found with ID $timesheetId")
+            return
+        }
+        timesheet.entries.add(timesheetEntry)
     }
 
     fun aggregateTimeSheetEntries(): List<TimesheetEntry> {
@@ -168,8 +173,7 @@ data class Timesheet(
     val id: Int,
     var name: String,
     var colorHex: String,
-    var entries: MutableList<TimesheetEntry>? = null
-
+    var entries: MutableList<TimesheetEntry> = mutableListOf()
 )
 
 // TimesheetEntry data class

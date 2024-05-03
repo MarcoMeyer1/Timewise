@@ -1,6 +1,7 @@
 package com.example.timewise
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,17 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TimeSheetAdapter(var timesheets: List<Timesheet>) : RecyclerView.Adapter<TimeSheetAdapter.ViewHolder>() {
-//timesheet adapter
-    private var entries: List<TimesheetEntry> = arrayListOf()
+class TimeSheetAdapter(private var timesheets: MutableList<Timesheet>) : RecyclerView.Adapter<TimeSheetAdapter.ViewHolder>() {
+    private var entries: MutableList<TimesheetEntry> = mutableListOf()
 
     fun updateEntries(newEntries: List<TimesheetEntry>) {
-        entries = newEntries
+        entries.clear()
+        entries.addAll(newEntries)
+        notifyDataSetChanged()
+    }
+    fun updateTimesheets(newTimesheets: List<Timesheet>) {
+        this.timesheets.clear()
+        this.timesheets.addAll(newTimesheets)  // Works because timesheets is a MutableList
         notifyDataSetChanged()
     }
 
@@ -41,9 +47,10 @@ class TimeSheetAdapter(var timesheets: List<Timesheet>) : RecyclerView.Adapter<T
             dateTextView.text = dateFormat.format(entry.startDate.time)
             eventNameTextView.text = entry.name
 
-            // Retrieve the color based on the timesheet's name
             val colorHex = timesheets.find { it.name == entry.category }?.colorHex ?: "#FFFFFF"
             cardView.setCardBackgroundColor(Color.parseColor(colorHex))
         }
     }
+
 }
+

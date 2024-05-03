@@ -43,9 +43,6 @@ class EventCreationDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // Initialize dummy data if useDummyData flag is set
-
-
         val builder = AlertDialog.Builder(requireActivity())
         val inflater = activity?.layoutInflater
         val view = inflater?.inflate(R.layout.popup_layout, null)
@@ -57,51 +54,40 @@ class EventCreationDialogFragment : DialogFragment() {
         val btnAddPhoto = view?.findViewById<Button>(R.id.btnAddPhoto)
         val btnCreateEvent = view?.findViewById<Button>(R.id.btnCreateEvent)
 
+        // Initialize the category spinner and possibly update timesheets
+        initializeCategorySpinner(categorySpinner)
 
+        btnStartDate?.setOnClickListener { showDateTimePickerDialog(true, btnStartDate) }
+        btnEndDate?.setOnClickListener { showDateTimePickerDialog(false, btnEndDate) }
+        btnAddPhoto?.setOnClickListener { openPhotoPicker() }
 
-        btnStartDate?.setOnClickListener {
-            showDateTimePickerDialog(true, btnStartDate)
-        }
-        btnEndDate?.setOnClickListener {
-            showDateTimePickerDialog(false, btnEndDate)
-        }
-        btnAddPhoto?.setOnClickListener {
-            openPhotoPicker()
-        }
         btnCreateEvent?.setOnClickListener {
+            // Ensure latest timesheets are loaded whenever we are adding an event
             if (useDummyData) {
                 TimesheetManager.timesheets = TimesheetManager.getDummyTimesheets()
+            } else {
+                // Optionally reload timesheets from a live data source here
             }
 
             val eventName = txtEventName?.text.toString()
             val allDay = allDaySwitch?.isChecked ?: false
             val category = categorySpinner?.selectedItem.toString()
-
             val timesheetId = TimesheetManager.timesheets.find { it.name == category }?.id ?: -1
 
             if (timesheetId != -1) {
                 val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
-
-                // Use actual TimesheetManager
                 TimesheetManager.addTimesheetEntry(timesheetId, timesheetEntry)
-
-                val entryList = TimesheetManager.getEntries(timesheetId)
-
-                val isEntryAdded = entryList.contains(timesheetEntry)
-
-                if (isEntryAdded) {
+                if (TimesheetManager.getEntries(timesheetId).contains(timesheetEntry)) {
                     Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show()
-                    dismiss()
                 } else {
                     Toast.makeText(requireContext(), "Failed to add event", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(requireContext(), "Timesheet not found", Toast.LENGTH_SHORT).show()
             }
-
             dismiss()
         }
-        initializeCategorySpinner(categorySpinner)
+
         builder.setView(view)
         return builder.create()
     }
