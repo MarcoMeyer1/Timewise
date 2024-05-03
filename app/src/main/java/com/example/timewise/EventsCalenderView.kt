@@ -44,7 +44,7 @@ class EventsCalenderView : BaseActivity() {
     }
 
     private fun loadTimesheets() {
-        val timesheets = TimesheetManager.getDummyTimesheets()  // Fetch timesheets
+        val timesheets = TimesheetManager.timesheets
         adapter.updateTimesheets(timesheets)  // Use the new method to update timesheets
         updateEntries(Calendar.getInstance())  // Update entries for today
     }
