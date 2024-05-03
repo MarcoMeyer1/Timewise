@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class TimeSheetAdapter(var timesheets: List<Timesheet>) : RecyclerView.Adapter<TimeSheetAdapter.ViewHolder>() {
-
+//timesheet adapter
     private var entries: List<TimesheetEntry> = arrayListOf()
 
     fun updateEntries(newEntries: List<TimesheetEntry>) {
