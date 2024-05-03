@@ -19,6 +19,14 @@ object TimesheetManager {
         timesheet?.entries?.add(timesheetEntry)
     }
 
+    fun aggregateTimeSheetEntries(): List<TimesheetEntry> {
+        val allEntries = mutableListOf<TimesheetEntry>()
+        for (timesheet in TimesheetManager.timesheets) {
+            allEntries.addAll(timesheet.entries ?: emptyList())
+        }
+        return allEntries
+    }
+
     fun getEntries(timesheetId: Int): List<TimesheetEntry> {
         val timesheet = timesheets.find { it.id == timesheetId }
         return timesheet?.entries ?: emptyList()
