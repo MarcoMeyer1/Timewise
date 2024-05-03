@@ -21,12 +21,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flask.colorpicker.ColorPickerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditListener{
+class ActiveTimesheetsPage : BaseActivity(), ActiveTimesheetAdapter.OnTimesheetEditListener{
 
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: TimesheetAdapter
-    var useDummy: Boolean = true
+    private lateinit var adapter: ActiveTimesheetAdapter
+    var useDummy: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -63,7 +63,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView_timesheets)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = TimesheetAdapter(TimesheetManager.timesheets, this)
+        adapter = ActiveTimesheetAdapter(TimesheetManager.timesheets, this)
         recyclerView.adapter = adapter
     }
 
@@ -110,10 +110,10 @@ class ActiveTimesheetsPage : BaseActivity(), TimesheetAdapter.OnTimesheetEditLis
 
 }
 
-class TimesheetAdapter(
+class ActiveTimesheetAdapter(
     private val timesheets: List<Timesheet>,
     private val onEditListener: OnTimesheetEditListener
-) : RecyclerView.Adapter<TimesheetAdapter.TimesheetViewHolder>() {
+) : RecyclerView.Adapter<ActiveTimesheetAdapter.TimesheetViewHolder>() {
     interface OnTimesheetEditListener {
         fun onEditClicked(timesheet: Timesheet)
     }

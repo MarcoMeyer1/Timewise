@@ -26,7 +26,7 @@ class EventCreationDialogFragment : DialogFragment() {
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
     private var selectedImageUri: Uri? = null
-    private var useDummyData: Boolean = true // Flag to determine whether to use dummy data
+    private var useDummyData: Boolean = false // Flag to determine whether to use dummy data
 
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
 
