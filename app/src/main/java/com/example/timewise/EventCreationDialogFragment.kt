@@ -3,14 +3,12 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.Button
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
-import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
-import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.Toast
@@ -18,17 +16,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import com.example.timewise.R
 import com.example.timewise.TimesheetEntry
 import com.example.timewise.TimesheetManager
-import com.example.timewise.TimesheetRepository
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.timewise.R;
 
 class EventCreationDialogFragment : DialogFragment() {
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
     private var selectedImageUri: Uri? = null
+    private var useDummyData: Boolean = true // Flag to determine whether to use dummy data
 
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
 
@@ -45,6 +43,9 @@ class EventCreationDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Initialize dummy data if useDummyData flag is set
+
+
         val builder = AlertDialog.Builder(requireActivity())
         val inflater = activity?.layoutInflater
         val view = inflater?.inflate(R.layout.popup_layout, null)
@@ -56,6 +57,8 @@ class EventCreationDialogFragment : DialogFragment() {
         val btnAddPhoto = view?.findViewById<Button>(R.id.btnAddPhoto)
         val btnCreateEvent = view?.findViewById<Button>(R.id.btnCreateEvent)
 
+
+
         btnStartDate?.setOnClickListener {
             showDateTimePickerDialog(true, btnStartDate)
         }
@@ -66,35 +69,56 @@ class EventCreationDialogFragment : DialogFragment() {
             openPhotoPicker()
         }
         btnCreateEvent?.setOnClickListener {
+            if (useDummyData) {
+                TimesheetManager.timesheets = TimesheetManager.getDummyTimesheets()
+            }
+
             val eventName = txtEventName?.text.toString()
             val allDay = allDaySwitch?.isChecked ?: false
             val category = categorySpinner?.selectedItem.toString()
 
-            val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
-            val dummyTimesheet = TimesheetRepository.getDummyTimesheet()
-            TimesheetManager.addTimesheetEntry(dummyTimesheet.id, timesheetEntry)
+            val timesheetId = TimesheetManager.timesheets.find { it.name == category }?.id ?: -1
 
-            val entryList = TimesheetManager.getEntries()
+            if (timesheetId != -1) {
+                val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
 
-            val isEntryAdded = entryList.contains(timesheetEntry)
+                // Use actual TimesheetManager
+                TimesheetManager.addTimesheetEntry(timesheetId, timesheetEntry)
 
-            if (isEntryAdded) {
-                Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show()
-                dismiss()
+                val entryList = TimesheetManager.getEntries(timesheetId)
+
+                val isEntryAdded = entryList.contains(timesheetEntry)
+
+                if (isEntryAdded) {
+                    Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to add event", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                Toast.makeText(requireContext(), "Failed to add event", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Timesheet not found", Toast.LENGTH_SHORT).show()
             }
-
 
             dismiss()
         }
-
+        initializeCategorySpinner(categorySpinner)
         builder.setView(view)
         return builder.create()
     }
 
     private fun openPhotoPicker() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun initializeCategorySpinner(categorySpinner: Spinner?) {
+        val categories = if (useDummyData) {
+            TimesheetManager.getDummyTimesheets().map { it.name }
+        } else {
+            TimesheetManager.timesheets.map { it.name }
+        }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        categorySpinner?.adapter = adapter
     }
 
     private fun showDateTimePickerDialog(isStartDate: Boolean, dateButton: Button) {
