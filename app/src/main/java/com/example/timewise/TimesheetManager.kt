@@ -1,5 +1,6 @@
 package com.example.timewise
 
+import android.net.Uri
 import java.util.Calendar
 
 object TimesheetManager {
@@ -18,6 +19,14 @@ object TimesheetManager {
         timesheet?.entries?.add(timesheetEntry)
     }
 
+    fun aggregateTimeSheetEntries(): List<TimesheetEntry> {
+        val allEntries = mutableListOf<TimesheetEntry>()
+        for (timesheet in TimesheetManager.timesheets) {
+            allEntries.addAll(timesheet.entries ?: emptyList())
+        }
+        return allEntries
+    }
+
     fun getEntries(timesheetId: Int): List<TimesheetEntry> {
         val timesheet = timesheets.find { it.id == timesheetId }
         return timesheet?.entries ?: emptyList()
@@ -32,8 +41,8 @@ object TimesheetManager {
         val entries1 = mutableListOf(
             TimesheetEntry(
                 name = "Meeting 1",
-                startDate = getCalendar(2024, Calendar.MAY, 5, 8, 0),
-                endDate = getCalendar(2024, Calendar.MAY, 5, 10, 0),
+                startDate = getCalendar(2024, Calendar.MAY, 6, 8, 0),
+                endDate = getCalendar(2024, Calendar.MAY, 6, 10, 0),
                 isAllDay = false,
                 category = timesheetName1,
                 photo = null
@@ -159,7 +168,7 @@ data class Timesheet(
     val id: Int,
     var name: String,
     var colorHex: String,
-    val entries: MutableList<TimesheetEntry>? = null
+    var entries: MutableList<TimesheetEntry>? = null
 
 )
 
@@ -170,9 +179,6 @@ data class TimesheetEntry(
     val endDate: Calendar,
     val isAllDay: Boolean,
     val category: String?,
-    val photo: String?
+    val photo: Uri?
 )
 
-object TimesheetRepository {
-
-}

@@ -119,8 +119,7 @@ class Analytics : BaseActivity() {
 
 
 
-    private fun showPhoto(photoUrl: String) {
-        val photoUri = Uri.parse(photoUrl)
+    private fun showPhoto(photoUri: Uri) {
         val dialog = Dialog(this)  // Ensure the context is suitable for dialog creation.
         dialog.setContentView(R.layout.layout_photo_viewer)
         val photoView: ImageView = dialog.findViewById(R.id.photoView)

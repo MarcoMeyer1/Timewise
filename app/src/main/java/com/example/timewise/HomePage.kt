@@ -50,7 +50,8 @@ class HomePage : BaseActivity() {
 
         val cvCalendar: CardView = findViewById(R.id.CVCalendar)
         cvCalendar.setOnClickListener {
-            //Navigate to Calander page
+            val intent = Intent(this, EventsCalenderView::class.java)
+            startActivity(intent)
         }
 
         val cvActiveTimesheets: CardView = findViewById(R.id.CVActiveTimesheets)
