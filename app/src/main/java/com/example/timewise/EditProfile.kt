@@ -1,16 +1,22 @@
 package com.example.timewise
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class EditProfile : BaseActivity() {
+    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,6 +27,20 @@ class EditProfile : BaseActivity() {
             insets
         }
 
+        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
+            if (uri != null) {
+                // Handle the selected image URI, e.g., update ImageView or store the URI
+                updateProfilePicture(uri)
+            } else {
+                Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        val btnChangePicture: Button = findViewById(R.id.btnEditChangePicture)
+        btnChangePicture.setOnClickListener {
+            // Launch the media picker when button is clicked
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
 
         prefillUserData()
 
@@ -46,6 +66,12 @@ class EditProfile : BaseActivity() {
             }
         }
 
+    }
+
+    private fun updateProfilePicture(imageUri: Uri) {
+        // Update your ImageView or user profile picture logic here
+        val imageView: ImageView = findViewById(R.id.imageView)
+        imageView.setImageURI(imageUri)
     }
 
     private fun prefillUserData() {
