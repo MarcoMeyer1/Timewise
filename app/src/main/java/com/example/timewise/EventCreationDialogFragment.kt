@@ -30,12 +30,10 @@ class EventCreationDialogFragment : DialogFragment() {
     private var endDate: Calendar? = null
     private var selectedImageUri: Uri? = null
 
-    // Declare the launcher as an instance variable
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // Initialize the launcher here
         pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
                 selectedImageUri = uri
@@ -50,7 +48,6 @@ class EventCreationDialogFragment : DialogFragment() {
         val builder = AlertDialog.Builder(requireActivity())
         val inflater = activity?.layoutInflater
         val view = inflater?.inflate(R.layout.popup_layout, null)
-
         val txtEventName = view?.findViewById<EditText>(R.id.txtEventName)
         val btnStartDate = view?.findViewById<Button>(R.id.btnStartDate)
         val btnEndDate = view?.findViewById<Button>(R.id.btnEndDate)
@@ -76,6 +73,19 @@ class EventCreationDialogFragment : DialogFragment() {
             val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
             val dummyTimesheet = TimesheetRepository.getDummyTimesheet()
             TimesheetManager.addTimesheetEntry(dummyTimesheet.id, timesheetEntry)
+
+            val entryList = TimesheetManager.getEntries()
+
+            val isEntryAdded = entryList.contains(timesheetEntry)
+
+            if (isEntryAdded) {
+                Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show()
+                dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Failed to add event", Toast.LENGTH_SHORT).show()
+            }
+
+
             dismiss()
         }
 
@@ -84,7 +94,6 @@ class EventCreationDialogFragment : DialogFragment() {
     }
 
     private fun openPhotoPicker() {
-        // Simply launch the picker using the already initialized launcher
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 

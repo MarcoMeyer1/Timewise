@@ -16,7 +16,12 @@ object TimesheetManager {
 
     fun addTimesheetEntry(timesheetId: Int, timesheetEntry: TimesheetEntry) {
         val timesheet = timesheets.find { it.id == timesheetId }
-        timesheet?.entries?.add(timesheetEntry)
+        timesheet?.let {
+            if (it.entries == null) {
+                it.entries = mutableListOf()
+            }
+            it.entries?.add(timesheetEntry)
+        }
     }
 
     fun getEntries(): List<TimesheetEntry> {
@@ -30,7 +35,7 @@ data class Timesheet(
     val id: Int,
     var name: String,
     var colorHex: String,
-    val entries: MutableList<TimesheetEntry>? = null
+    var entries: MutableList<TimesheetEntry>? = null
 
 )
 
