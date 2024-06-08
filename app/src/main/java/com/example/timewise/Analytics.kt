@@ -66,7 +66,7 @@ class Analytics : BaseActivity() {
         val end = endDate
 
         // Define a flag to determine whether to use dummy data or actual data
-        val useDummyData = true  // Set this to true to use dummy data, false to use actual timesheet data
+        val useDummyData = false  // Set this to true to use dummy data, false to use actual timesheet data
 
         if (start == null || end == null) {
             Log.d("Analytics", "No start or end date set.")
@@ -203,7 +203,7 @@ class Analytics : BaseActivity() {
         val categoryHours = mutableMapOf<String, Float>()
 
         // Define a flag to determine whether to use dummy data or actual data
-        val useDummyData = true  // Set this to true to use dummy data, false to use actual timesheet data
+        val useDummyData = false  // Set this to true to use dummy data, false to use actual timesheet data
 
 
         val timesheets = if (useDummyData) TimesheetManager.getDummyTimesheets() else TimesheetManager.timesheets

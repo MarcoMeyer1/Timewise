@@ -10,7 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.bumptech.glide.Glide
+
 
 class Login : AppCompatActivity() {
 
@@ -22,8 +22,13 @@ class Login : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+
+
         }
 
+
+        var adminUser = User("Admin", "admin", "admin")
+        UserManager.addUser(adminUser)
 
         val emailEditText: EditText = findViewById(R.id.txtLoginEmail)
         val passwordEditText: EditText = findViewById(R.id.txtLoginPassword)

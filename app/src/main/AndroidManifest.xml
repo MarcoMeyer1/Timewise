@@ -16,6 +16,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".TimesheetDetails"
+            android:exported="false" />
+        <activity
             android:name=".EventsCalenderView"
             android:exported="false" />
         <activity
