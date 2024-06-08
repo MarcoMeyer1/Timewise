@@ -4,6 +4,8 @@ plugins {
     kotlin("kapt")
     id("com.google.gms.google-services")
 
+
+
 }
 
 android {
@@ -67,4 +69,10 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("com.google.firebase:firebase-appcheck:17.0.0")
     implementation ("com.google.firebase:firebase-appcheck-interop:17.0.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    // https://firebase.google.com/docs/android/setup#available-libraries
 }
