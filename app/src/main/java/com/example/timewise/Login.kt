@@ -10,9 +10,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 
 class Login : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,7 @@ class Login : AppCompatActivity() {
             insets
         }
 
+        auth = FirebaseAuth.getInstance()
 
         val emailEditText: EditText = findViewById(R.id.txtLoginEmail)
         val passwordEditText: EditText = findViewById(R.id.txtLoginPassword)
@@ -37,8 +40,6 @@ class Login : AppCompatActivity() {
             finish()
         }
 
-
-
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -48,24 +49,19 @@ class Login : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val user = UserManager.findUser(email, password)
-            if (user != null) {
-                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                UserData.loggedUserName = user.name
-                UserData.loggedUserEmail = user.email
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val user = auth.currentUser
+                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
 
-                val intent = Intent(this, HomePage::class.java)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
-            }
+                        val intent = Intent(this, HomePage::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
     }
-}
-
-object UserData {
-    var loggedUserName: String = ""
-    var loggedUserEmail: String = ""
-
 }

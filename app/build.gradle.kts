@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("kapt")
+    id("com.google.gms.google-services")
 
 }
 
@@ -50,6 +51,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -58,4 +60,11 @@ dependencies {
     implementation("com.google.android.material:material:1.5.0")
     implementation("com.github.QuadFlask:colorpicker:0.0.15")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation ("com.google.firebase:firebase-auth:21.0.1")
+    implementation ("com.google.firebase:firebase-database:20.0.3")
+    implementation ("com.google.firebase:firebase-storage:20.0.1")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.google.firebase:firebase-appcheck:17.0.0")
+    implementation ("com.google.firebase:firebase-appcheck-interop:17.0.0")
 }
