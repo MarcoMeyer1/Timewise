@@ -43,7 +43,6 @@ class EventCreationDialogFragment : DialogFragment() {
             }
         }
         dbManager = DatabaseOperationsManager(context)
-        fetchTimesheets()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -91,6 +90,11 @@ class EventCreationDialogFragment : DialogFragment() {
             dismiss()
         }
 
+        fetchTimesheets { fetchedTimesheets ->
+            timesheets = fetchedTimesheets
+            categorySpinner?.let { initializeCategorySpinner(it) }
+        }
+
         builder.setView(view)
         return builder.create()
     }
@@ -99,10 +103,9 @@ class EventCreationDialogFragment : DialogFragment() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun fetchTimesheets() {
+    private fun fetchTimesheets(callback: (List<Timesheet>) -> Unit) {
         TimesheetManager.fetchTimesheets { fetchedTimesheets ->
-            timesheets = fetchedTimesheets
-            view?.findViewById<Spinner>(R.id.categorySpinner)?.let { initializeCategorySpinner(it) }
+            callback(fetchedTimesheets)
         }
     }
 

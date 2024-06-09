@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TimesheetEntryAdapter(private var entries: MutableList<TimesheetManager.TimesheetEntry>) :
-    RecyclerView.Adapter<TimesheetEntryAdapter.ViewHolder>() {
+class TimesheetEntryAdapter(
+    private var entries: MutableList<TimesheetManager.TimesheetEntry>,
+    private val itemClickListener: (TimesheetManager.TimesheetEntry) -> Unit
+) : RecyclerView.Adapter<TimesheetEntryAdapter.ViewHolder>() {
 
     fun updateEntries(newEntries: List<TimesheetManager.TimesheetEntry>) {
         entries.clear()
@@ -40,9 +42,13 @@ class TimesheetEntryAdapter(private var entries: MutableList<TimesheetManager.Ti
         fun bind(entry: TimesheetManager.TimesheetEntry) {
             eventNameTextView.text = entry.name
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            dateTextView.text = dateFormat.format(Date(entry.startDate))
+            dateTextView.text = dateFormat.format(entry.startDate.timeInMillis)
             val color = "#FF5733" // You can change this to fetch color dynamically
             cardView.setCardBackgroundColor(Color.parseColor(color))
+
+            itemView.setOnClickListener {
+                itemClickListener(entry)
+            }
         }
     }
 }

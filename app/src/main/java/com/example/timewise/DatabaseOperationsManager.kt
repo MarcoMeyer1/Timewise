@@ -156,6 +156,38 @@ class DatabaseOperationsManager(private val context: Context) {
             completion(emptyList())
         }
     }
+    fun fetchTimesheetEntriesBetweenDates(
+        db: FirebaseDatabase,
+        userId: String,
+        start: Long,
+        end: Long,
+        completion: (List<TimesheetManager.TimesheetEntry>) -> Unit
+    ) {
+        val entriesRef = db.getReference("users/$userId/timesheets")
+
+        entriesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val timesheetEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
+                for (timesheetSnapshot in snapshot.children) {
+                    val timesheetId = timesheetSnapshot.key ?: continue
+                    val entriesSnapshot = timesheetSnapshot.child("entries")
+                    for (entrySnapshot in entriesSnapshot.children) {
+                        val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
+                        if (entry != null && entry.startDate.timeInMillis in start..end) {
+                            timesheetEntries.add(entry)
+                        }
+                    }
+                }
+                completion(timesheetEntries)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DatabaseOperationsManager", "Error fetching timesheet entries: $error")
+                completion(emptyList())
+            }
+        })
+    }
+
 
     fun fetchColorsForTimesheets(
         db: FirebaseDatabase,

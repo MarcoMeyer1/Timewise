@@ -1,17 +1,15 @@
 package com.example.timewise
 
 import android.os.Bundle
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import android.util.Log
 import android.widget.Button
 import android.widget.CalendarView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 
-class EventsCalendarView : BaseActivity() {
+class EventsCalenderView : BaseActivity() {
 
     private lateinit var calendarView: CalendarView
     private lateinit var recyclerView: RecyclerView
@@ -28,7 +26,7 @@ class EventsCalendarView : BaseActivity() {
     private fun setupUI() {
         calendarView = findViewById(R.id.calendarView)
         recyclerView = findViewById(R.id.timelineRecyclerView)
-        adapter = TimesheetEntryAdapter(mutableListOf())
+        adapter = TimesheetEntryAdapter(mutableListOf()) { entry -> handleEntryClick(entry) }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -47,7 +45,7 @@ class EventsCalendarView : BaseActivity() {
         val db = FirebaseDatabase.getInstance()
         databaseOperationsManager.fetchAllTimesheetEntriesForUser(db) { entries ->
             val filteredEntries = entries.filter {
-                val entryDate = Calendar.getInstance().apply { timeInMillis = it.startDate }
+                val entryDate = Calendar.getInstance().apply { timeInMillis = it.startDate.timeInMillis }
                 entryDate.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
                         entryDate.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
                         entryDate.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
@@ -57,5 +55,9 @@ class EventsCalendarView : BaseActivity() {
                 adapter.updateEntries(filteredEntries)
             }
         }
+    }
+
+    private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
+        //TODO: Make photo pop up
     }
 }

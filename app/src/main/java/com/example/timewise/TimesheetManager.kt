@@ -28,6 +28,7 @@ object TimesheetManager {
         val photo: Uri? = null
     )
 
+
     fun addTimesheet(timesheet: Timesheet) {
         currentUser?.uid?.let { userId ->
             database.getReference("users/$userId/timesheets").push().setValue(timesheet)
@@ -57,6 +58,29 @@ object TimesheetManager {
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("TimesheetManager", "Error fetching timesheets: $error")
+                    completion(emptyList())
+                }
+            })
+        }
+    }
+
+    fun fetchAllTimesheetEntriesForUser(db: FirebaseDatabase, completion: (List<TimesheetEntry>) -> Unit) {
+        currentUser?.uid?.let { userId ->
+            val entriesRef = db.getReference("users/$userId/timesheets")
+            entriesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val entries = mutableListOf<TimesheetEntry>()
+                    for (timesheetSnapshot in snapshot.children) {
+                        for (entrySnapshot in timesheetSnapshot.child("entries").children) {
+                            val entry = entrySnapshot.getValue(TimesheetEntry::class.java)
+                            entry?.let { entries.add(it) }
+                        }
+                    }
+                    completion(entries)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("TimesheetManager", "Error fetching timesheet entries: $error")
                     completion(emptyList())
                 }
             })

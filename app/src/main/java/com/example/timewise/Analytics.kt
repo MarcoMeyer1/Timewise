@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
@@ -68,13 +67,15 @@ class Analytics : BaseActivity() {
         val userId = TimesheetManager.getAuth().currentUser?.uid ?: return entries
         val db = TimesheetManager.getDatabase()
 
-        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(db, userId, "timesheetId", start, end) {
+        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(db, userId, start, end) {
             entries.addAll(it)
             (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
         }
 
         return entries
     }
+
+
 
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         entry.photo?.let { photoUri ->
