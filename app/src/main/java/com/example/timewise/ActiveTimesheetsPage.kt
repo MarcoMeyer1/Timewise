@@ -52,6 +52,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
     private fun fetchAndDisplayTimesheets() {
         TimesheetManager.fetchTimesheets { timesheets ->
             runOnUiThread {
+                Log.d("ActiveTimesheetsPage", "Fetched timesheets: $timesheets")
                 adapter.updateTimesheets(timesheets)
             }
         }
@@ -67,7 +68,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
         val colorPickerView: ColorPickerView = dialogView.findViewById(R.id.colorPicker)
 
         nameEditText.setText(timesheet.name)
-        colorPickerView.setInitialColor(Color.parseColor(timesheet.colorHex), true)
+        colorPickerView.setInitialColor(Color.parseColor(timesheet.color), true)
 
         AlertDialog.Builder(this)
             .setTitle("Edit Timesheet")
@@ -75,7 +76,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
             .setPositiveButton("Save") { dialog, which ->
                 val newName = nameEditText.text.toString()
                 val newColor = "#" + Integer.toHexString(colorPickerView.selectedColor).substring(2)
-                val updatedTimesheet = timesheet.copy(name = newName, colorHex = newColor)
+                val updatedTimesheet = timesheet.copy(name = newName, color = newColor)
                 updateTimesheet(updatedTimesheet)
             }
             .setNegativeButton("Cancel", null)
@@ -94,5 +95,3 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
         }
     }
 }
-
-

@@ -15,7 +15,7 @@ object TimesheetManager {
     data class Timesheet(
         val id: String = "",
         var name: String = "",
-        var colorHex: String = "",
+        var color: String = "",
         var entries: MutableList<TimesheetEntry> = mutableListOf()
     )
 
@@ -30,26 +30,28 @@ object TimesheetManager {
 
     fun addTimesheet(timesheet: Timesheet) {
         currentUser?.uid?.let { userId ->
-            database.getReference("timesheets/$userId").push().setValue(timesheet)
+            database.getReference("users/$userId/timesheets").push().setValue(timesheet)
         }
     }
 
     fun addTimesheetEntry(timesheetId: String, timesheetEntry: TimesheetEntry) {
         currentUser?.uid?.let { userId ->
-            database.getReference("timesheets/$userId/$timesheetId/entries").push().setValue(timesheetEntry)
+            database.getReference("users/$userId/timesheets/$timesheetId/entries").push().setValue(timesheetEntry)
         }
     }
 
     fun fetchTimesheets(completion: (List<Timesheet>) -> Unit) {
         currentUser?.uid?.let { userId ->
-            val timesheetsRef = database.getReference("timesheets/$userId")
+            val timesheetsRef = database.getReference("users/$userId/timesheets")
             timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val timesheets = mutableListOf<Timesheet>()
                     for (childSnapshot in snapshot.children) {
                         val timesheet = childSnapshot.getValue(Timesheet::class.java)
+                        Log.d("TimesheetManager", "Fetched timesheet: $timesheet")
                         timesheet?.let { timesheets.add(it) }
                     }
+                    Log.d("TimesheetManager", "Total timesheets fetched: ${timesheets.size}")
                     completion(timesheets)
                 }
 

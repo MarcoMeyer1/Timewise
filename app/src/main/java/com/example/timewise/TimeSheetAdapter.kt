@@ -1,6 +1,7 @@
 package com.example.timewise
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,28 +41,33 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val entry = entries[position]
-        holder.bind(entry)
+        val timesheet = timesheets[position]
+        holder.bind(timesheet)
+        Log.d("TimeSheetAdapter", "Binding timesheet: ${timesheet.name}")
     }
 
-    override fun getItemCount(): Int = entries.size
+    override fun getItemCount(): Int = timesheets.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
         private val eventNameTextView: TextView = itemView.findViewById(R.id.eventNameTextView)
         private val cardView: CardView = itemView.findViewById(R.id.cardView)
 
-        fun bind(entry: TimesheetManager.TimesheetEntry) {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            dateTextView.text = dateFormat.format(entry.startDate.time)
-            eventNameTextView.text = entry.name
+        fun bind(timesheet: TimesheetManager.Timesheet) {
+            // Set the timesheet name
+            eventNameTextView.text = timesheet.name
 
-            val colorHex = timesheets.find { it.id == entry.category }?.colorHex ?: "#FFFFFF"
-            cardView.setCardBackgroundColor(Color.parseColor(colorHex))
+            // Set a dummy date for demonstration
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            dateTextView.text = dateFormat.format(Calendar.getInstance().time)
+
+            // Use a default color if color is empty or invalid
+            val color = if (timesheet.color.isNullOrEmpty()) "#FFFFFF" else timesheet.color
+            cardView.setCardBackgroundColor(Color.parseColor(color))
 
             // Set click listener for editing timesheet
             itemView.setOnClickListener {
-                onTimesheetEditListener?.onEditClicked(timesheets[adapterPosition])
+                onTimesheetEditListener?.onEditClicked(timesheet)
             }
         }
     }
