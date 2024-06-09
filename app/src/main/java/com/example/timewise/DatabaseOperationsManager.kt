@@ -1,10 +1,12 @@
 package com.example.timewise
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.util.Calendar
 
 class DatabaseOperationsManager(private val context: Context) {
 
@@ -111,11 +113,27 @@ class DatabaseOperationsManager(private val context: Context) {
                 val timesheets = mutableListOf<TimesheetManager.Timesheet>()
                 val timesheetIdMap = mutableMapOf<String, String>()
                 for (timesheetSnapshot in snapshot.children) {
-                    val timesheet = timesheetSnapshot.getValue(TimesheetManager.Timesheet::class.java)
-                    timesheet?.let {
-                        timesheets.add(it)
-                        timesheetIdMap[it.name] = timesheetSnapshot.key ?: ""
+                    val timesheet = TimesheetManager.Timesheet().apply {
+                        id = timesheetSnapshot.key ?: ""
+                        name = timesheetSnapshot.child("name").getValue(String::class.java) ?: ""
+                        color = timesheetSnapshot.child("color").getValue(String::class.java) ?: ""
+                        entries = timesheetSnapshot.child("entries").children.mapNotNull { entrySnapshot ->
+                            TimesheetManager.TimesheetEntry(
+                                name = entrySnapshot.child("eventName").getValue(String::class.java) ?: "",
+                                startDate = Calendar.getInstance().apply {
+                                    timeInMillis = entrySnapshot.child("startDate").getValue(Long::class.java) ?: 0L
+                                },
+                                endDate = Calendar.getInstance().apply {
+                                    timeInMillis = entrySnapshot.child("endDate").getValue(Long::class.java) ?: 0L
+                                },
+                                isAllDay = entrySnapshot.child("allDay").getValue(Boolean::class.java) ?: false,
+                                category = entrySnapshot.child("category").getValue(String::class.java),
+                                photo = entrySnapshot.child("photo").getValue(String::class.java)?.let { Uri.parse(it) }
+                            )
+                        }.toMutableList()
                     }
+                    timesheets.add(timesheet)
+                    timesheetIdMap[timesheet.name] = timesheet.id
                 }
                 callback(timesheets, timesheetIdMap)
             }
@@ -125,6 +143,8 @@ class DatabaseOperationsManager(private val context: Context) {
             }
         })
     }
+
+
 
 
     fun fetchAllTimesheetEntriesForUser(

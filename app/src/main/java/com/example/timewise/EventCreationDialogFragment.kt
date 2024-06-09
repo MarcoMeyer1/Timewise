@@ -102,14 +102,14 @@ class EventCreationDialogFragment : DialogFragment() {
         return builder.create()
     }
 
+
     private fun openPhotoPicker() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     private fun fetchTimesheets(callback: (List<Timesheet>, Map<String, String>) -> Unit) {
-        TimesheetManager.fetchTimesheets { fetchedTimesheets, idMap ->
-            callback(fetchedTimesheets, idMap)
-        }
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
+        dbManager.fetchTimesheets(TimesheetManager.getDatabase(), userId, callback)
     }
 
     private fun initializeCategorySpinner(categorySpinner: Spinner) {

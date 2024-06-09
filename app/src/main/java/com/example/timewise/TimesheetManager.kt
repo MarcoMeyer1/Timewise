@@ -13,20 +13,21 @@ object TimesheetManager {
     private val currentUser: FirebaseUser? = auth.currentUser
 
     data class Timesheet(
-        val id: String = "",
+        var id: String = "",
         var name: String = "",
         var color: String = "",
         var entries: MutableList<TimesheetEntry> = mutableListOf()
     )
 
     data class TimesheetEntry(
-        val name: String = "",
-        val startDate: Calendar = Calendar.getInstance(),
-        val endDate: Calendar = Calendar.getInstance(),
-        val isAllDay: Boolean = false,
-        val category: String? = null,
-        val photo: Uri? = null
+        var name: String = "",
+        var startDate: Calendar = Calendar.getInstance(),
+        var endDate: Calendar = Calendar.getInstance(),
+        var isAllDay: Boolean = false,
+        var category: String? = null,
+        var photo: Uri? = null
     )
+
 
 
     fun addTimesheet(timesheet: Timesheet) {

@@ -20,6 +20,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
     private lateinit var adapter: TimeSheetAdapter
     private lateinit var auth: FirebaseAuth
     private lateinit var currentUser: FirebaseUser
+    private lateinit var dbManager: DatabaseOperationsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +29,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
 
         auth = FirebaseAuth.getInstance()
         currentUser = auth.currentUser!!
+        dbManager = DatabaseOperationsManager(this)
 
         updateToolbarColor("#5ECB35")
         setupRecyclerView()
@@ -50,13 +52,16 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
     }
 
     private fun fetchAndDisplayTimesheets() {
-        TimesheetManager.fetchTimesheets { timesheets, idMap ->
+        val db = TimesheetManager.getDatabase()
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
+        dbManager.fetchTimesheets(db, userId) { timesheets, idMap ->
             runOnUiThread {
                 Log.d("ActiveTimesheetsPage", "Fetched timesheets: $timesheets")
                 adapter.updateTimesheets(timesheets)
             }
         }
     }
+
 
     override fun onEditClicked(timesheet: TimesheetManager.Timesheet) {
         showEditDialog(timesheet)
