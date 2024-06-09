@@ -1,7 +1,9 @@
 package com.example.timewise
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -122,31 +124,37 @@ class DatabaseOperationsManager(private val context: Context) {
         })
     }
 
-    fun fetchTimesheetEntriesBetweenDates(
+    fun fetchAllTimesheetEntriesForUser(
         db: FirebaseDatabase,
-        userId: String,
-        timesheetId: String,
-        startDate: Long,
-        endDate: Long,
-        callback: (List<TimesheetManager.TimesheetEntry>) -> Unit
+        completion: (List<TimesheetManager.TimesheetEntry>) -> Unit
     ) {
-        val entriesRef = db.getReference("users").child(userId).child("timesheets").child(timesheetId).child("timesheetEntries")
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val userRef = db.getReference("users/$userId/timesheets")
 
-        entriesRef.orderByChild("startDate").startAt(startDate.toDouble()).endAt(endDate.toDouble())
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val entries = mutableListOf<TimesheetManager.TimesheetEntry>()
-                    for (entrySnapshot in snapshot.children) {
-                        val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
-                        entry?.let { entries.add(it) }
+                    val allEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
+                    for (timesheetSnapshot in snapshot.children) {
+                        val entriesSnapshot = timesheetSnapshot.child("timesheetEntries")
+                        for (entrySnapshot in entriesSnapshot.children) {
+                            val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
+                            entry?.let { allEntries.add(it) }
+                        }
                     }
-                    callback(entries)
+                    completion(allEntries)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    showToast("Error fetching timesheet entries: ${error.message}")
+                    Log.e("DatabaseOperationsManager", "Error fetching entries: $error")
+                    completion(emptyList())
                 }
             })
+        } else {
+            Log.e("DatabaseOperationsManager", "No current user logged in")
+            completion(emptyList())
+        }
     }
 
     fun fetchColorsForTimesheets(

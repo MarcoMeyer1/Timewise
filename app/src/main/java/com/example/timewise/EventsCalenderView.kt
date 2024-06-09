@@ -1,17 +1,22 @@
 package com.example.timewise
 
 import android.os.Bundle
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import android.util.Log
 import android.widget.Button
 import android.widget.CalendarView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-class EventsCalenderView : BaseActivity() {
+class EventsCalendarView : BaseActivity() {
 
     private lateinit var calendarView: CalendarView
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: TimeSheetAdapter
+    private lateinit var adapter: TimesheetEntryAdapter
+    private val databaseOperationsManager = DatabaseOperationsManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,12 +28,9 @@ class EventsCalenderView : BaseActivity() {
     private fun setupUI() {
         calendarView = findViewById(R.id.calendarView)
         recyclerView = findViewById(R.id.timelineRecyclerView)
-        // Initialize with an empty mutable list
-        adapter = TimeSheetAdapter(mutableListOf())
+        adapter = TimesheetEntryAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-
-        loadTimesheets()
 
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDate = Calendar.getInstance()
@@ -41,31 +43,19 @@ class EventsCalenderView : BaseActivity() {
         }
     }
 
-    private fun loadTimesheets() {
-        TimesheetManager.fetchTimesheets { timesheets ->
-            adapter.updateTimesheets(timesheets)
-            updateEntries(Calendar.getInstance())
-        }
-    }
-
     private fun updateEntries(selectedDate: Calendar) {
-        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
-        val db = TimesheetManager.getDatabase()
-        val timesheetId = adapter.getTimesheets().firstOrNull()?.id ?: return
-
-        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(
-            db,
-            userId,
-            timesheetId,
-            selectedDate.timeInMillis,
-            selectedDate.timeInMillis
-        ) { entries ->
+        val db = FirebaseDatabase.getInstance()
+        databaseOperationsManager.fetchAllTimesheetEntriesForUser(db) { entries ->
             val filteredEntries = entries.filter {
-                it.startDate.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
-                        it.startDate.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
-                        it.startDate.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
+                val entryDate = Calendar.getInstance().apply { timeInMillis = it.startDate }
+                entryDate.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
+                        entryDate.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
+                        entryDate.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
             }
-            adapter.updateEntries(filteredEntries)
+            runOnUiThread {
+                Log.d("EventsCalendarView", "Filtered entries: $filteredEntries")
+                adapter.updateEntries(filteredEntries)
+            }
         }
     }
 }
