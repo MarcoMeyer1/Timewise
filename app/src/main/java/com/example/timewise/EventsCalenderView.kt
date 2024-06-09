@@ -1,6 +1,5 @@
 package com.example.timewise
 
-import EventCreationDialogFragment
 import android.os.Bundle
 import android.widget.Button
 import android.widget.CalendarView
@@ -19,7 +18,6 @@ class EventsCalenderView : BaseActivity() {
         setContentView(R.layout.activity_events_calender_view)
         setupUI()
         updateToolbarColor("#F479FF")
-
     }
 
     private fun setupUI() {
@@ -44,17 +42,30 @@ class EventsCalenderView : BaseActivity() {
     }
 
     private fun loadTimesheets() {
-        val timesheets = TimesheetManager.timesheets
-        adapter.updateTimesheets(timesheets)  // Use the new method to update timesheets
-        updateEntries(Calendar.getInstance())  // Update entries for today
+        TimesheetManager.fetchTimesheets { timesheets ->
+            adapter.updateTimesheets(timesheets)
+            updateEntries(Calendar.getInstance())
+        }
     }
 
     private fun updateEntries(selectedDate: Calendar) {
-        val entries = TimesheetManager.aggregateTimeSheetEntries().filter {
-            it.startDate.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
-                    it.startDate.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
-                    it.startDate.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
+        val db = TimesheetManager.getDatabase()
+        val timesheetId = adapter.getTimesheets().firstOrNull()?.id ?: return
+
+        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(
+            db,
+            userId,
+            timesheetId,
+            selectedDate.timeInMillis,
+            selectedDate.timeInMillis
+        ) { entries ->
+            val filteredEntries = entries.filter {
+                it.startDate.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
+                        it.startDate.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
+                        it.startDate.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
+            }
+            adapter.updateEntries(filteredEntries)
         }
-        adapter.updateEntries(entries)
     }
 }

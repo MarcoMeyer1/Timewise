@@ -13,19 +13,19 @@ object TimesheetManager {
     private val currentUser: FirebaseUser? = auth.currentUser
 
     data class Timesheet(
-        val id: String,
-        var name: String,
-        var colorHex: String,
+        val id: String = "",
+        var name: String = "",
+        var colorHex: String = "",
         var entries: MutableList<TimesheetEntry> = mutableListOf()
     )
 
     data class TimesheetEntry(
-        val name: String,
-        val startDate: Calendar,
-        val endDate: Calendar,
-        val isAllDay: Boolean,
-        val category: String?,
-        val photo: Uri?
+        val name: String = "",
+        val startDate: Calendar = Calendar.getInstance(),
+        val endDate: Calendar = Calendar.getInstance(),
+        val isAllDay: Boolean = false,
+        val category: String? = null,
+        val photo: Uri? = null
     )
 
     fun addTimesheet(timesheet: Timesheet) {
@@ -61,5 +61,11 @@ object TimesheetManager {
         }
     }
 
+    fun getAuth(): FirebaseAuth {
+        return auth
+    }
 
+    fun getDatabase(): FirebaseDatabase {
+        return database
+    }
 }

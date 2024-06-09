@@ -56,7 +56,7 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
             dateTextView.text = dateFormat.format(entry.startDate.time)
             eventNameTextView.text = entry.name
 
-            val colorHex = timesheets.find { it.name == entry.category }?.colorHex ?: "#FFFFFF"
+            val colorHex = timesheets.find { it.id == entry.category }?.colorHex ?: "#FFFFFF"
             cardView.setCardBackgroundColor(Color.parseColor(colorHex))
 
             // Set click listener for editing timesheet

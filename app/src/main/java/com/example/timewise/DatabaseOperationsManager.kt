@@ -76,8 +76,8 @@ class DatabaseOperationsManager(private val context: Context) {
         timesheetId: String,
         entryId: String,
         eventName: String,
-        startDate: String,
-        endDate: String,
+        startDate: Long,
+        endDate: Long,
         allDay: Boolean,
         photoUrl: String? = null
     ) {
@@ -122,22 +122,57 @@ class DatabaseOperationsManager(private val context: Context) {
         })
     }
 
-    // Method to fetch timesheet entries between given dates
-    fun fetchTimesheetEntriesBetweenDates(startDate: Long, endDate: Long, callback: (List<TimesheetManager.TimesheetEntry>) -> Unit) {
-        // Implement database query to fetch timesheet entries between the provided dates
-        // Execute the query and fetch the results
-        // Convert the results into a list of TimesheetEntry objects
-        // Invoke the callback with the list of timesheet entries
-        // Example usage of callback: callback(timesheetEntriesList)
+    fun fetchTimesheetEntriesBetweenDates(
+        db: FirebaseDatabase,
+        userId: String,
+        timesheetId: String,
+        startDate: Long,
+        endDate: Long,
+        callback: (List<TimesheetManager.TimesheetEntry>) -> Unit
+    ) {
+        val entriesRef = db.getReference("users").child(userId).child("timesheets").child(timesheetId).child("timesheetEntries")
+
+        entriesRef.orderByChild("startDate").startAt(startDate.toDouble()).endAt(endDate.toDouble())
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val entries = mutableListOf<TimesheetManager.TimesheetEntry>()
+                    for (entrySnapshot in snapshot.children) {
+                        val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
+                        entry?.let { entries.add(it) }
+                    }
+                    callback(entries)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    showToast("Error fetching timesheet entries: ${error.message}")
+                }
+            })
     }
 
-    // Method to fetch colors for timesheets
-    fun fetchColorsForTimesheets(callback: (Map<String, String>) -> Unit) {
-        // Implement database query to fetch colors for timesheets
-        // Execute the query and fetch the results
-        // Convert the results into a map of timesheet name to color hex code
-        // Invoke the callback with the map of timesheet colors
-        // Example usage of callback: callback(timesheetColorsMap)
+    fun fetchColorsForTimesheets(
+        db: FirebaseDatabase,
+        userId: String,
+        callback: (Map<String, String>) -> Unit
+    ) {
+        val timesheetsRef = db.getReference("users").child(userId).child("timesheets")
+
+        timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val timesheetColors = mutableMapOf<String, String>()
+                for (timesheetSnapshot in snapshot.children) {
+                    val timesheetId = timesheetSnapshot.key
+                    val color = timesheetSnapshot.child("color").getValue(String::class.java)
+                    if (timesheetId != null && color != null) {
+                        timesheetColors[timesheetId] = color
+                    }
+                }
+                callback(timesheetColors)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                showToast("Error fetching timesheet colors: ${error.message}")
+            }
+        })
     }
 
     private fun showToast(message: String) {

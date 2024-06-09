@@ -10,7 +10,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
@@ -35,7 +34,6 @@ class Analytics : BaseActivity() {
         val selectDateButton: Button = findViewById(R.id.selectDateButton)
         val chart: BarChart = findViewById(R.id.chart)
 
-
         updateToolbarColor("#FF6262")
 
         selectDateButton.setOnClickListener {
@@ -48,14 +46,12 @@ class Analytics : BaseActivity() {
         // Load all data initially
         setupChart(chart)
         updateTimesheetEntries()
-
     }
 
     private fun initializeDateRange() {
-        // Set initial dates here if needed
         startDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -7) }  // One week ago
         endDate = Calendar.getInstance()  // Today
-        updateTimesheetEntries()  // Load initial data
+        updateTimesheetEntries()
     }
 
     private fun setupRecyclerView() {
@@ -65,75 +61,57 @@ class Analytics : BaseActivity() {
     }
 
     private fun getTimesheetEntries(): List<TimesheetManager.TimesheetEntry> {
-        val start = startDate
-        val end = endDate
+        val start = startDate?.timeInMillis ?: return emptyList()
+        val end = endDate?.timeInMillis ?: return emptyList()
 
-        if (start == null || end == null) {
-            Log.d("Analytics", "No start or end date set.")
-            return emptyList()
+        val entries = mutableListOf<TimesheetManager.TimesheetEntry>()
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return entries
+        val db = TimesheetManager.getDatabase()
+
+        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(db, userId, "timesheetId", start, end) {
+            entries.addAll(it)
+            (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
         }
 
-        // Call the appropriate method to fetch timesheet entries from the database
-        val entries = DatabaseOperationsManager.fetchTimesheetEntriesBetweenDates(start, end)
-
-        Log.d("Analytics", "Total entries found: ${entries.size}")
         return entries
     }
 
-
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
-        Log.d("Analytics", "Entry clicked: ${entry.name}, Photo URL: ${entry.photo}")
-        entry.photo?.let { photoUrl ->
-            Log.d("Analytics", "Showing photo for entry: ${entry.name}")
-            showPhoto(photoUrl)
+        entry.photo?.let { photoUri ->
+            showPhoto(photoUri)
         } ?: run {
-            Log.d("Analytics", "No picture to show for entry: ${entry.name}")
             Toast.makeText(this, "No picture", Toast.LENGTH_SHORT).show()
         }
     }
 
-
     private fun updateTimesheetEntries() {
-        Log.d(
-            "Analytics",
-            "Updating entries... Start Date: ${startDate?.time}, End Date: ${endDate?.time}"
-        )
-        val entries = getTimesheetEntries()  // Get entries with updated dates
-        Log.d("Analytics", "Entries count after update: ${entries.size}")
+        val entries = getTimesheetEntries()
         (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
     }
 
-
     private fun showPhoto(photoUri: Uri) {
-        val dialog = Dialog(this)  // Ensure the context is suitable for dialog creation.
+        val dialog = Dialog(this)
         dialog.setContentView(R.layout.layout_photo_viewer)
         val photoView: ImageView = dialog.findViewById(R.id.photoView)
         photoView.setImageURI(photoUri)
         dialog.show()
     }
 
-
     private fun selectDateRange(onDatesSelected: () -> Unit) {
-        val now = Calendar.getInstance()  // Define 'now' to use the current time
+        val now = Calendar.getInstance()
         DatePickerDialog(this, { _, year, month, day ->
             startDate = Calendar.getInstance().apply {
                 set(year, month, day, 0, 0, 0)
                 set(Calendar.MILLISECOND, 0)
             }
-            DatePickerDialog(
-                this,
-                { _, year, month, day ->
-                    endDate = Calendar.getInstance().apply {
-                        set(year, month, day, 23, 59, 59)
-                        set(Calendar.MILLISECOND, 999)
-                    }
-                    onDatesSelected()
-                    updateTimesheetEntries()  // This ensures entries are updated immediately after dates are set
-                },
-                now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            DatePickerDialog(this, { _, year, month, day ->
+                endDate = Calendar.getInstance().apply {
+                    set(year, month, day, 23, 59, 59)
+                    set(Calendar.MILLISECOND, 999)
+                }
+                onDatesSelected()
+                updateTimesheetEntries()
+            }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
         }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
     }
 
@@ -146,38 +124,35 @@ class Analytics : BaseActivity() {
         }
 
         val dataSet = BarDataSet(entries, "Hours by Category")
-        val colors = DatabaseOperationsManager.fetchColorsForTimesheets()
-        dataSet.colors = if (colors.isNotEmpty()) colors else ColorTemplate.MATERIAL_COLORS.toList()
-        dataSet.valueTextSize = 12f
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
+        val db = TimesheetManager.getDatabase()
 
-        val data = BarData(dataSet)
-        chart.data = data
-        chart.description.isEnabled = false
+        DatabaseOperationsManager(this).fetchColorsForTimesheets(db, userId) { colors ->
+            dataSet.colors = if (colors.isNotEmpty()) colors.values.map { Color.parseColor(it) }.toMutableList() else ColorTemplate.MATERIAL_COLORS.toMutableList()
+            dataSet.valueTextSize = 12f
 
-        // Configure the legend
-        val legend = chart.legend
-        legend.isEnabled = true
-        legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-        legend.orientation = Legend.LegendOrientation.HORIZONTAL
-        legend.setDrawInside(false)
-        legend.form = Legend.LegendForm.SQUARE // This can be LINE, CIRCLE, or SQUARE
-        legend.formSize = 8f // Set the size of the legend forms (icons)
-        legend.textSize = 12f // Set the text size of the legend
+            val data = BarData(dataSet)
+            chart.data = data
+            chart.description.isEnabled = false
 
-        chart.animateY(1000)
-        chart.invalidate()
+            val legend = chart.legend
+            legend.isEnabled = true
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+            legend.orientation = Legend.LegendOrientation.HORIZONTAL
+            legend.setDrawInside(false)
+            legend.form = Legend.LegendForm.SQUARE
+            legend.formSize = 8f
+            legend.textSize = 12f
+
+            chart.animateY(1000)
+            chart.invalidate()
+        }
     }
 
     private fun getChartData(): MutableList<BarEntry> {
         val entries = mutableListOf<BarEntry>()
-
         // Populate the entries list with data
-
         return entries
     }
 }
-
-
-
-

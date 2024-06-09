@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
 class TimesheetEntryAdapter(
-    private val entries: MutableList<TimesheetEntry>,
-    private val itemClickListener: (TimesheetEntry) -> Unit
+    private val entries: MutableList<TimesheetManager.TimesheetEntry>,
+    private val itemClickListener: (TimesheetManager.TimesheetEntry) -> Unit
 ) : RecyclerView.Adapter<TimesheetEntryAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -21,7 +21,7 @@ class TimesheetEntryAdapter(
         val photoIcon: ImageView = view.findViewById(R.id.photoIcon)
     }
 
-    fun updateEntries(newEntries: List<TimesheetEntry>) {
+    fun updateEntries(newEntries: List<TimesheetManager.TimesheetEntry>) {
         entries.clear()
         entries.addAll(newEntries)
         notifyDataSetChanged()  // Notify the RecyclerView that the data has changed
