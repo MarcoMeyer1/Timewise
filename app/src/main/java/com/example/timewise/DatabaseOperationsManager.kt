@@ -162,15 +162,26 @@ class DatabaseOperationsManager(private val context: Context) {
                     for (timesheetSnapshot in snapshot.children) {
                         val entriesSnapshot = timesheetSnapshot.child("entries")
                         for (entrySnapshot in entriesSnapshot.children) {
-                            val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
-                            entry?.let { allEntries.add(it) }
+                            val entry = TimesheetManager.TimesheetEntry().apply {
+                                name = entrySnapshot.child("eventName").getValue(String::class.java) ?: ""
+                                startDate = Calendar.getInstance().apply {
+                                    timeInMillis = entrySnapshot.child("startDate").getValue(Long::class.java) ?: 0L
+                                }
+                                endDate = Calendar.getInstance().apply {
+                                    timeInMillis = entrySnapshot.child("endDate").getValue(Long::class.java) ?: 0L
+                                }
+                                isAllDay = entrySnapshot.child("allDay").getValue(Boolean::class.java) ?: false
+                                category = entrySnapshot.child("category").getValue(String::class.java)
+                                photo = entrySnapshot.child("photo").getValue(String::class.java)?.let { Uri.parse(it) }
+                            }
+                            allEntries.add(entry)
                         }
                     }
                     completion(allEntries)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("DatabaseOperationsManager", "Error fetching entries: $error")
+                    Log.e("DatabaseOperationsManager", "Error fetching entries: ${error.message}")
                     completion(emptyList())
                 }
             })
@@ -179,6 +190,7 @@ class DatabaseOperationsManager(private val context: Context) {
             completion(emptyList())
         }
     }
+
 
     fun fetchTimesheetEntriesBetweenDates(
         db: FirebaseDatabase,

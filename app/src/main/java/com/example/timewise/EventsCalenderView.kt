@@ -61,7 +61,6 @@ class EventsCalenderView : BaseActivity() {
         }
     }
 
-
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         entry.photo?.let { photoUri ->
             showPhoto(photoUri)
@@ -78,3 +77,4 @@ class EventsCalenderView : BaseActivity() {
         dialog.show()
     }
 }
+
