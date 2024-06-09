@@ -3,20 +3,25 @@ package com.example.timewise
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 
 class NewTimesheet : BaseActivity() {
     private lateinit var timesheetNameEditText: EditText
-    private var selectedColorHex: String = "#FFFFFF" // Default white color
+    private var selectedColorHex: String = "#FFFFFF"
+    private lateinit var db: FirebaseDatabase
+    private lateinit var databaseOperationsManager: DatabaseOperationsManager
+    private lateinit var auth: FirebaseAuth
+    private var currentUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,14 +33,18 @@ class NewTimesheet : BaseActivity() {
             insets
         }
 
+        db = FirebaseDatabase.getInstance()
+        databaseOperationsManager = DatabaseOperationsManager(this)
+
+        auth = FirebaseAuth.getInstance()
+        currentUser = auth.currentUser
+
         updateToolbarColor("#B378FE")
         timesheetNameEditText = findViewById(R.id.txtNewTimesheetName)
         val buttonSelectColor: Button = findViewById(R.id.btnSelectColor)
         val buttonCreate: Button = findViewById(R.id.btnCreateNewTimesheet)
 
-
         // Setup color picker button
-        // Setup color picker dialog
         buttonSelectColor.setOnClickListener {
             ColorPickerDialogBuilder
                 .with(this)
@@ -51,20 +60,26 @@ class NewTimesheet : BaseActivity() {
                 .show()
         }
 
-
         // Setup the create button
         buttonCreate.setOnClickListener {
             val timesheetName = timesheetNameEditText.text.toString()
             if (timesheetName.isNotEmpty()) {
-                val newTimesheet = Timesheet(
-                    id = TimesheetManager.timesheets.size + 1,  // Generate a new ID
-                    name = timesheetName,
-                    colorHex = selectedColorHex
-                )
-                TimesheetManager.addTimesheet(newTimesheet)
-                val intent = Intent(this, ActiveTimesheetsPage::class.java)
-                startActivity(intent)
-                finish()
+                currentUser?.let { user ->
+                    val userId = user.uid
+                    val timesheetId = "timesheet_${System.currentTimeMillis()}"
+                    databaseOperationsManager.createTimesheet(
+                        db,
+                        userId,
+                        timesheetId,
+                        timesheetName,
+                        selectedColorHex
+                    )
+                    val intent = Intent(this, ActiveTimesheetsPage::class.java)
+                    startActivity(intent)
+                    finish()
+                } ?: run {
+                    Toast.makeText(this, "User is not logged in", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show()
             }

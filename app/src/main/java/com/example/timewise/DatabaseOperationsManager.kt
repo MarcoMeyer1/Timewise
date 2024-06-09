@@ -3,6 +3,9 @@ package com.example.timewise
 import android.content.Context
 import android.widget.Toast
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class DatabaseOperationsManager(private val context: Context) {
 
@@ -98,6 +101,43 @@ class DatabaseOperationsManager(private val context: Context) {
                 showToast("Timesheet entry already exists")
             }
         }.addOnFailureListener { e -> showToast("Error checking timesheet entry: ${e.message}") }
+    }
+
+    fun fetchTimesheets(db: FirebaseDatabase, userId: String, callback: (List<TimesheetManager.Timesheet>) -> Unit) {
+        val timesheetsRef = db.getReference("users").child(userId).child("timesheets")
+
+        timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val timesheets = mutableListOf<TimesheetManager.Timesheet>()
+                for (timesheetSnapshot in snapshot.children) {
+                    val timesheet = timesheetSnapshot.getValue(TimesheetManager.Timesheet::class.java)
+                    timesheet?.let { timesheets.add(it) }
+                }
+                callback(timesheets)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                showToast("Error fetching timesheets: ${error.message}")
+            }
+        })
+    }
+
+    // Method to fetch timesheet entries between given dates
+    fun fetchTimesheetEntriesBetweenDates(startDate: Long, endDate: Long, callback: (List<TimesheetManager.TimesheetEntry>) -> Unit) {
+        // Implement database query to fetch timesheet entries between the provided dates
+        // Execute the query and fetch the results
+        // Convert the results into a list of TimesheetEntry objects
+        // Invoke the callback with the list of timesheet entries
+        // Example usage of callback: callback(timesheetEntriesList)
+    }
+
+    // Method to fetch colors for timesheets
+    fun fetchColorsForTimesheets(callback: (Map<String, String>) -> Unit) {
+        // Implement database query to fetch colors for timesheets
+        // Execute the query and fetch the results
+        // Convert the results into a map of timesheet name to color hex code
+        // Invoke the callback with the map of timesheet colors
+        // Example usage of callback: callback(timesheetColorsMap)
     }
 
     private fun showToast(message: String) {

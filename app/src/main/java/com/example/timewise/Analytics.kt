@@ -50,53 +50,38 @@ class Analytics : BaseActivity() {
         updateTimesheetEntries()
 
     }
+
     private fun initializeDateRange() {
         // Set initial dates here if needed
         startDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -7) }  // One week ago
         endDate = Calendar.getInstance()  // Today
         updateTimesheetEntries()  // Load initial data
     }
+
     private fun setupRecyclerView() {
         timesheetEntryList = findViewById(R.id.timesheetEntryList)
         timesheetEntryList.layoutManager = LinearLayoutManager(this)
         timesheetEntryList.adapter = TimesheetEntryAdapter(mutableListOf(), this::handleEntryClick)
     }
-    private fun getTimesheetEntries(): List<TimesheetEntry> {
+
+    private fun getTimesheetEntries(): List<TimesheetManager.TimesheetEntry> {
         val start = startDate
         val end = endDate
-
-        // Define a flag to determine whether to use dummy data or actual data
-        val useDummyData = true  // Set this to true to use dummy data, false to use actual timesheet data
 
         if (start == null || end == null) {
             Log.d("Analytics", "No start or end date set.")
             return emptyList()
         }
 
-        // Select timesheets based on the dummy data flag
-        val timesheets = if (useDummyData) TimesheetManager.getDummyTimesheets() else TimesheetManager.timesheets
+        // Call the appropriate method to fetch timesheet entries from the database
+        val entries = DatabaseOperationsManager.fetchTimesheetEntriesBetweenDates(start, end)
 
-        Log.d("Analytics", "Filtering from ${start.time} to ${end.time}")
-        val filteredEntries = timesheets.flatMap { timesheet ->
-            timesheet.entries?.filter { entry ->
-                val startMatches = entry.startDate.timeInMillis >= start.timeInMillis
-                val endMatches = entry.endDate.timeInMillis <= end.timeInMillis
-                Log.d("Analytics", "Entry ${entry.name}: Start ${entry.startDate.time}, End ${entry.endDate.time}, Matches: $startMatches, $endMatches")
-                startMatches && endMatches
-            }.also { filtered ->
-                Log.d("Analytics", "Entries for ${timesheet.name}: ${filtered?.size ?: 0}")
-            } ?: emptyList()
-        }
-
-        Log.d("Analytics", "Total entries found: ${filteredEntries.size}")
-        return filteredEntries
+        Log.d("Analytics", "Total entries found: ${entries.size}")
+        return entries
     }
 
 
-
-
-
-    private fun handleEntryClick(entry: TimesheetEntry) {
+    private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         Log.d("Analytics", "Entry clicked: ${entry.name}, Photo URL: ${entry.photo}")
         entry.photo?.let { photoUrl ->
             Log.d("Analytics", "Showing photo for entry: ${entry.name}")
@@ -109,14 +94,14 @@ class Analytics : BaseActivity() {
 
 
     private fun updateTimesheetEntries() {
-        Log.d("Analytics", "Updating entries... Start Date: ${startDate?.time}, End Date: ${endDate?.time}")
+        Log.d(
+            "Analytics",
+            "Updating entries... Start Date: ${startDate?.time}, End Date: ${endDate?.time}"
+        )
         val entries = getTimesheetEntries()  // Get entries with updated dates
         Log.d("Analytics", "Entries count after update: ${entries.size}")
         (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
     }
-
-
-
 
 
     private fun showPhoto(photoUri: Uri) {
@@ -135,21 +120,22 @@ class Analytics : BaseActivity() {
                 set(year, month, day, 0, 0, 0)
                 set(Calendar.MILLISECOND, 0)
             }
-            DatePickerDialog(this, { _, year, month, day ->
-                endDate = Calendar.getInstance().apply {
-                    set(year, month, day, 23, 59, 59)
-                    set(Calendar.MILLISECOND, 999)
-                }
-                onDatesSelected()
-                updateTimesheetEntries()  // This ensures entries are updated immediately after dates are set
-            }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
+            DatePickerDialog(
+                this,
+                { _, year, month, day ->
+                    endDate = Calendar.getInstance().apply {
+                        set(year, month, day, 23, 59, 59)
+                        set(Calendar.MILLISECOND, 999)
+                    }
+                    onDatesSelected()
+                    updateTimesheetEntries()  // This ensures entries are updated immediately after dates are set
+                },
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
     }
-
-
-
-
-
 
     private fun setupChart(chart: BarChart) {
         val entries = getChartData()
@@ -160,13 +146,7 @@ class Analytics : BaseActivity() {
         }
 
         val dataSet = BarDataSet(entries, "Hours by Category")
-        val colors = TimesheetManager.timesheets.mapNotNull {
-            try {
-                Color.parseColor(it.colorHex)
-            } catch (e: IllegalArgumentException) {
-                null
-            }
-        }
+        val colors = DatabaseOperationsManager.fetchColorsForTimesheets()
         dataSet.colors = if (colors.isNotEmpty()) colors else ColorTemplate.MATERIAL_COLORS.toList()
         dataSet.valueTextSize = 12f
 
@@ -174,7 +154,7 @@ class Analytics : BaseActivity() {
         chart.data = data
         chart.description.isEnabled = false
 
-// Configure the legend
+        // Configure the legend
         val legend = chart.legend
         legend.isEnabled = true
         legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
@@ -189,41 +169,15 @@ class Analytics : BaseActivity() {
         chart.invalidate()
     }
 
-
-
-
-
-
-
-
-
-
     private fun getChartData(): MutableList<BarEntry> {
         val entries = mutableListOf<BarEntry>()
-        val categoryHours = mutableMapOf<String, Float>()
 
-        // Define a flag to determine whether to use dummy data or actual data
-        val useDummyData = true  // Set this to true to use dummy data, false to use actual timesheet data
-
-
-        val timesheets = if (useDummyData) TimesheetManager.getDummyTimesheets() else TimesheetManager.timesheets
-
-        timesheets.forEach { timesheet ->
-            timesheet.entries?.forEach { entry ->
-                if ((startDate == null || entry.startDate.timeInMillis >= startDate!!.timeInMillis) &&
-                    (endDate == null || entry.endDate.timeInMillis <= endDate!!.timeInMillis)) {
-                    val duration = (entry.endDate.timeInMillis - entry.startDate.timeInMillis) / (1000 * 60 * 60).toFloat()
-                    categoryHours[timesheet.name] = categoryHours.getOrDefault(timesheet.name, 0f) + duration
-                }
-            }
-        }
-
-        var index = 0f
-        categoryHours.forEach { (category, hours) ->
-            entries.add(BarEntry(index++, hours))
-        }
+        // Populate the entries list with data
 
         return entries
     }
-
 }
+
+
+
+
