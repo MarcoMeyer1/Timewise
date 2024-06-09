@@ -50,7 +50,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
     }
 
     private fun fetchAndDisplayTimesheets() {
-        TimesheetManager.fetchTimesheets { timesheets ->
+        TimesheetManager.fetchTimesheets { timesheets, idMap ->
             runOnUiThread {
                 Log.d("ActiveTimesheetsPage", "Fetched timesheets: $timesheets")
                 adapter.updateTimesheets(timesheets)

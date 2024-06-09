@@ -31,6 +31,7 @@ class EventCreationDialogFragment : DialogFragment() {
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private lateinit var dbManager: DatabaseOperationsManager
     private var timesheets: List<Timesheet> = emptyList()
+    private var timesheetIdMap: Map<String, String> = emptyMap()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -61,6 +62,12 @@ class EventCreationDialogFragment : DialogFragment() {
         btnEndDate?.setOnClickListener { showDateTimePickerDialog(false, btnEndDate) }
         btnAddPhoto?.setOnClickListener { openPhotoPicker() }
 
+        fetchTimesheets { fetchedTimesheets, idMap ->
+            timesheets = fetchedTimesheets
+            timesheetIdMap = idMap
+            categorySpinner?.let { initializeCategorySpinner(it) }
+        }
+
         btnCreateEvent?.setOnClickListener {
             val eventName = txtEventName?.text.toString()
             val allDay = allDaySwitch?.isChecked ?: false
@@ -70,11 +77,12 @@ class EventCreationDialogFragment : DialogFragment() {
             if (timesheet != null) {
                 val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
                 val userId = TimesheetManager.getAuth().currentUser?.uid ?: return@setOnClickListener
+                val timesheetId = timesheetIdMap[timesheet.name]
 
                 dbManager.createTimesheetEntry(
                     TimesheetManager.getDatabase(),
                     userId,
-                    timesheet.id,
+                    timesheetId ?: "",
                     UUID.randomUUID().toString(),
                     eventName,
                     startDate!!.timeInMillis,
@@ -90,11 +98,6 @@ class EventCreationDialogFragment : DialogFragment() {
             dismiss()
         }
 
-        fetchTimesheets { fetchedTimesheets ->
-            timesheets = fetchedTimesheets
-            categorySpinner?.let { initializeCategorySpinner(it) }
-        }
-
         builder.setView(view)
         return builder.create()
     }
@@ -103,9 +106,9 @@ class EventCreationDialogFragment : DialogFragment() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun fetchTimesheets(callback: (List<Timesheet>) -> Unit) {
-        TimesheetManager.fetchTimesheets { fetchedTimesheets ->
-            callback(fetchedTimesheets)
+    private fun fetchTimesheets(callback: (List<Timesheet>, Map<String, String>) -> Unit) {
+        TimesheetManager.fetchTimesheets { fetchedTimesheets, idMap ->
+            callback(fetchedTimesheets, idMap)
         }
     }
 

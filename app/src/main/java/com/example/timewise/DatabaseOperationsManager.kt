@@ -4,10 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
 class DatabaseOperationsManager(private val context: Context) {
 
@@ -60,7 +57,7 @@ class DatabaseOperationsManager(private val context: Context) {
                 val timesheet = mapOf(
                     "name" to name,
                     "color" to color,
-                    "timesheetEntries" to emptyMap<String, Any>()
+                    "entries" to emptyMap<String, Any>()
                 )
 
                 timesheetRef.setValue(timesheet)
@@ -75,7 +72,7 @@ class DatabaseOperationsManager(private val context: Context) {
     fun createTimesheetEntry(
         db: FirebaseDatabase,
         userId: String,
-        timesheetId: String,
+        timesheetName: String, // Using timesheet name directly
         entryId: String,
         eventName: String,
         startDate: Long,
@@ -83,8 +80,7 @@ class DatabaseOperationsManager(private val context: Context) {
         allDay: Boolean,
         photoUrl: String? = null
     ) {
-        val entryRef = db.getReference("users").child(userId).child("timesheets").child(timesheetId)
-            .child("timesheetEntries").child(entryId)
+        val entryRef = db.getReference("users").child(userId).child("timesheets").child(timesheetName).child("entries").child(entryId)
 
         entryRef.get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists()) {
@@ -105,17 +101,23 @@ class DatabaseOperationsManager(private val context: Context) {
         }.addOnFailureListener { e -> showToast("Error checking timesheet entry: ${e.message}") }
     }
 
-    fun fetchTimesheets(db: FirebaseDatabase, userId: String, callback: (List<TimesheetManager.Timesheet>) -> Unit) {
+
+
+    fun fetchTimesheets(db: FirebaseDatabase, userId: String, callback: (List<TimesheetManager.Timesheet>, Map<String, String>) -> Unit) {
         val timesheetsRef = db.getReference("users").child(userId).child("timesheets")
 
         timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val timesheets = mutableListOf<TimesheetManager.Timesheet>()
+                val timesheetIdMap = mutableMapOf<String, String>()
                 for (timesheetSnapshot in snapshot.children) {
                     val timesheet = timesheetSnapshot.getValue(TimesheetManager.Timesheet::class.java)
-                    timesheet?.let { timesheets.add(it) }
+                    timesheet?.let {
+                        timesheets.add(it)
+                        timesheetIdMap[it.name] = timesheetSnapshot.key ?: ""
+                    }
                 }
-                callback(timesheets)
+                callback(timesheets, timesheetIdMap)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -123,6 +125,7 @@ class DatabaseOperationsManager(private val context: Context) {
             }
         })
     }
+
 
     fun fetchAllTimesheetEntriesForUser(
         db: FirebaseDatabase,
@@ -137,7 +140,7 @@ class DatabaseOperationsManager(private val context: Context) {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val allEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
                     for (timesheetSnapshot in snapshot.children) {
-                        val entriesSnapshot = timesheetSnapshot.child("timesheetEntries")
+                        val entriesSnapshot = timesheetSnapshot.child("entries")
                         for (entrySnapshot in entriesSnapshot.children) {
                             val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
                             entry?.let { allEntries.add(it) }
@@ -156,6 +159,7 @@ class DatabaseOperationsManager(private val context: Context) {
             completion(emptyList())
         }
     }
+
     fun fetchTimesheetEntriesBetweenDates(
         db: FirebaseDatabase,
         userId: String,
@@ -187,7 +191,6 @@ class DatabaseOperationsManager(private val context: Context) {
             }
         })
     }
-
 
     fun fetchColorsForTimesheets(
         db: FirebaseDatabase,

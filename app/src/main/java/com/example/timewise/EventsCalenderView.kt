@@ -1,9 +1,13 @@
 package com.example.timewise
 
+import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.CalendarView
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.FirebaseDatabase
@@ -57,7 +61,20 @@ class EventsCalenderView : BaseActivity() {
         }
     }
 
+
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
-        //TODO: Make photo pop up
+        entry.photo?.let { photoUri ->
+            showPhoto(photoUri)
+        } ?: run {
+            Toast.makeText(this, "No picture", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showPhoto(photoUri: Uri) {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.layout_photo_viewer)
+        val photoView: ImageView = dialog.findViewById(R.id.photoView)
+        photoView.setImageURI(photoUri)
+        dialog.show()
     }
 }

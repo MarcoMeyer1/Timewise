@@ -42,13 +42,10 @@ class TimesheetEntryAdapter(
         fun bind(entry: TimesheetManager.TimesheetEntry) {
             eventNameTextView.text = entry.name
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            dateTextView.text = dateFormat.format(entry.startDate.timeInMillis)
+            dateTextView.text = dateFormat.format(Date(entry.startDate.timeInMillis))
             val color = "#FF5733" // You can change this to fetch color dynamically
             cardView.setCardBackgroundColor(Color.parseColor(color))
-
-            itemView.setOnClickListener {
-                itemClickListener(entry)
-            }
+            itemView.setOnClickListener { itemClickListener(entry) }
         }
     }
 }

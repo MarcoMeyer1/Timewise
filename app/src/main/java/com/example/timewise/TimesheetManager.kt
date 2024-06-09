@@ -41,51 +41,37 @@ object TimesheetManager {
         }
     }
 
-    fun fetchTimesheets(completion: (List<Timesheet>) -> Unit) {
-        currentUser?.uid?.let { userId ->
-            val timesheetsRef = database.getReference("users/$userId/timesheets")
+    fun fetchTimesheets(callback: (List<Timesheet>, Map<String, String>) -> Unit) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val timesheetsRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("timesheets")
+
             timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val timesheets = mutableListOf<Timesheet>()
-                    for (childSnapshot in snapshot.children) {
-                        val timesheet = childSnapshot.getValue(Timesheet::class.java)
-                        Log.d("TimesheetManager", "Fetched timesheet: $timesheet")
-                        timesheet?.let { timesheets.add(it) }
-                    }
-                    Log.d("TimesheetManager", "Total timesheets fetched: ${timesheets.size}")
-                    completion(timesheets)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("TimesheetManager", "Error fetching timesheets: $error")
-                    completion(emptyList())
-                }
-            })
-        }
-    }
-
-    fun fetchAllTimesheetEntriesForUser(db: FirebaseDatabase, completion: (List<TimesheetEntry>) -> Unit) {
-        currentUser?.uid?.let { userId ->
-            val entriesRef = db.getReference("users/$userId/timesheets")
-            entriesRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val entries = mutableListOf<TimesheetEntry>()
+                    val timesheetIdMap = mutableMapOf<String, String>()
                     for (timesheetSnapshot in snapshot.children) {
-                        for (entrySnapshot in timesheetSnapshot.child("entries").children) {
-                            val entry = entrySnapshot.getValue(TimesheetEntry::class.java)
-                            entry?.let { entries.add(it) }
+                        val timesheet = timesheetSnapshot.getValue(Timesheet::class.java)
+                        timesheet?.let {
+                            timesheets.add(it)
+                            timesheetIdMap[it.name] = timesheetSnapshot.key ?: ""
                         }
                     }
-                    completion(entries)
+                    callback(timesheets, timesheetIdMap)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("TimesheetManager", "Error fetching timesheet entries: $error")
-                    completion(emptyList())
+                    Log.e("TimesheetManager", "Error fetching timesheets: ${error.message}")
+                    callback(emptyList(), emptyMap())
                 }
             })
+        } else {
+            Log.e("TimesheetManager", "No current user logged in")
+            callback(emptyList(), emptyMap())
         }
     }
+
 
     fun getAuth(): FirebaseAuth {
         return auth
