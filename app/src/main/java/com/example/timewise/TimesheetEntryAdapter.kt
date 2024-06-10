@@ -40,7 +40,7 @@ class TimesheetEntryAdapter(
         private val cardView: CardView = itemView.findViewById(R.id.cardView)
 
         fun bind(entry: TimesheetManager.TimesheetEntry) {
-            eventNameTextView.text = entry.name
+            eventNameTextView.text = entry.name // Ensure this line is correct
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             dateTextView.text = dateFormat.format(Date(entry.startDate.timeInMillis))
 
