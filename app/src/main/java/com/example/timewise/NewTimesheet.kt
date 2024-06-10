@@ -68,7 +68,7 @@ class NewTimesheet : BaseActivity() {
                 return@setOnClickListener
             }
 
-            if (selectedColorHex == null || selectedColorHex.isEmpty()) {
+            if (selectedColorHex.isEmpty() || selectedColorHex == "#FFFFFF") {
                 Toast.makeText(this, "Please select a color", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
