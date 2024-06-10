@@ -63,11 +63,6 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
             cardView.setCardBackgroundColor(Color.parseColor(color))
 
             // Set click listener for editing timesheet
-            itemView.setOnClickListener {
-                onTimesheetEditListener?.onEditClicked(timesheet)
-            }
-
-            // Set click listener for edit button
             editButton.setOnClickListener {
                 onTimesheetEditListener?.onEditClicked(timesheet)
             }

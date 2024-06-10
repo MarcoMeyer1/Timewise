@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Color
+import android.widget.Toast
 import com.flask.colorpicker.ColorPickerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -82,10 +83,28 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
                 val newName = nameEditText.text.toString()
                 val newColor = "#" + Integer.toHexString(colorPickerView.selectedColor).substring(2)
                 val updatedTimesheet = timesheet.copy(name = newName, color = newColor)
-                updateTimesheet(updatedTimesheet)
+                updateTimesheetInDatabase(updatedTimesheet)
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun updateTimesheetInDatabase(timesheet: TimesheetManager.Timesheet) {
+        val db = TimesheetManager.getDatabase()
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
+
+        dbManager.updateTimesheet(db, userId, timesheet.id, timesheet.name, timesheet.color) { success ->
+            if (success) {
+                updateTimesheet(timesheet)
+                runOnUiThread {
+                    Toast.makeText(this, "Timesheet updated successfully", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                runOnUiThread {
+                    Toast.makeText(this, "Failed to update timesheet", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun updateTimesheet(updatedTimesheet: TimesheetManager.Timesheet) {

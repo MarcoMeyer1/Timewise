@@ -45,6 +45,28 @@ class DatabaseOperationsManager(private val context: Context) {
         }.addOnFailureListener { e -> showToast("Error checking user: ${e.message}") }
     }
 
+    fun updateTimesheet(
+        db: FirebaseDatabase,
+        userId: String,
+        timesheetId: String,
+        name: String,
+        color: String,
+        onComplete: (Boolean) -> Unit
+    ) {
+        val timesheetRef = db.getReference("users").child(userId).child("timesheets").child(timesheetId)
+        val updates = mapOf(
+            "name" to name,
+            "color" to color
+        )
+
+        timesheetRef.updateChildren(updates).addOnCompleteListener { task ->
+            onComplete(task.isSuccessful)
+        }.addOnFailureListener { e ->
+            Log.e("DatabaseOperationsManager", "Error updating timesheet: ${e.message}")
+            onComplete(false)
+        }
+    }
+
     fun createTimesheet(
         db: FirebaseDatabase,
         userId: String,
