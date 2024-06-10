@@ -60,28 +60,34 @@ class NewTimesheet : BaseActivity() {
                 .show()
         }
 
-        // Setup the create button
         buttonCreate.setOnClickListener {
             val timesheetName = timesheetNameEditText.text.toString()
-            if (timesheetName.isNotEmpty()) {
-                currentUser?.let { user ->
-                    val userId = user.uid
-                    val timesheetId = "timesheet_${System.currentTimeMillis()}"
-                    databaseOperationsManager.createTimesheet(
-                        db,
-                        userId,
-                        timesheetId,
-                        timesheetName,
-                        selectedColorHex
-                    )
-                    val intent = Intent(this, ActiveTimesheetsPage::class.java)
-                    startActivity(intent)
-                    finish()
-                } ?: run {
-                    Toast.makeText(this, "User is not logged in", Toast.LENGTH_SHORT).show()
-                }
-            } else {
+
+            if (timesheetName.isEmpty()) {
                 Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedColorHex.isEmpty() || selectedColorHex == "#FFFFFF") {
+                Toast.makeText(this, "Please select a color", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            currentUser?.let { user ->
+                val userId = user.uid
+                val timesheetId = "timesheet_${System.currentTimeMillis()}"
+                databaseOperationsManager.createTimesheet(
+                    db,
+                    userId,
+                    timesheetId,
+                    timesheetName,
+                    selectedColorHex
+                )
+                val intent = Intent(this, ActiveTimesheetsPage::class.java)
+                startActivity(intent)
+                finish()
+            } ?: run {
+                Toast.makeText(this, "User is not logged in", Toast.LENGTH_SHORT).show()
             }
         }
     }
