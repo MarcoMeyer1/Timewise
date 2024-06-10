@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +37,7 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_timesheet, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.timesheet_card, parent, false)
         return ViewHolder(view)
     }
 
@@ -49,17 +50,13 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
     override fun getItemCount(): Int = timesheets.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
-        private val eventNameTextView: TextView = itemView.findViewById(R.id.eventNameTextView)
+        private val timesheetNameTextView: TextView = itemView.findViewById(R.id.timesheet_name)
+        private val editButton: ImageView = itemView.findViewById(R.id.btnEdit)
         private val cardView: CardView = itemView.findViewById(R.id.cardView)
 
         fun bind(timesheet: TimesheetManager.Timesheet) {
             // Set the timesheet name
-            eventNameTextView.text = timesheet.name
-
-            // Set a dummy date for demonstration
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            dateTextView.text = dateFormat.format(Calendar.getInstance().time)
+            timesheetNameTextView.text = timesheet.name
 
             // Use a default color if color is empty or invalid
             val color = if (timesheet.color.isNullOrEmpty()) "#FFFFFF" else timesheet.color
@@ -67,6 +64,11 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
 
             // Set click listener for editing timesheet
             itemView.setOnClickListener {
+                onTimesheetEditListener?.onEditClicked(timesheet)
+            }
+
+            // Set click listener for edit button
+            editButton.setOnClickListener {
                 onTimesheetEditListener?.onEditClicked(timesheet)
             }
         }
