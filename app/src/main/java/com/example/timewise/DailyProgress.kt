@@ -1,10 +1,10 @@
 package com.example.timewise
 
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
@@ -21,6 +21,15 @@ class DailyProgress : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var progressText: TextView
     private lateinit var tvMessage: TextView
+
+    // Icons for each day of the week
+    private lateinit var ivMonday: ImageView
+    private lateinit var ivTuesday: ImageView
+    private lateinit var ivWednesday: ImageView
+    private lateinit var ivThursday: ImageView
+    private lateinit var ivFriday: ImageView
+    private lateinit var ivSaturday: ImageView
+    private lateinit var ivSunday: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,12 +48,20 @@ class DailyProgress : BaseActivity() {
         progressText = findViewById(R.id.progressText)
         tvMessage = findViewById(R.id.tvMessage)
 
+        // Initialize the day icons
+        ivMonday = findViewById(R.id.ivMonday)
+        ivTuesday = findViewById(R.id.ivTuesday)
+        ivWednesday = findViewById(R.id.ivWednesday)
+        ivThursday = findViewById(R.id.ivThursday)
+        ivFriday = findViewById(R.id.ivFriday)
+        ivSaturday = findViewById(R.id.ivSaturday)
+        ivSunday = findViewById(R.id.ivSunday)
+
         databaseOperationsManager = DatabaseOperationsManager(this)
 
         userId?.let {
             fetchUserGoals(it)
             fetchDailyProgress(it)
-
         }
     }
 
@@ -70,18 +87,46 @@ class DailyProgress : BaseActivity() {
             databaseOperationsManager.fetchUserName(FirebaseDatabase.getInstance(), userId) { displayName ->
                 tvMessage.text = "You are doing really great, $displayName!"
             }
+
+            updateDayIcons(entries, totalHours)
         }
     }
 
+    private fun updateDayIcons(entries: List<TimesheetManager.TimesheetEntry>, totalHours: Double) {
+        val today = Calendar.getInstance()
+        val daysOfWeek = arrayOf(
+            Pair(ivSunday, Calendar.SUNDAY),
+            Pair(ivMonday, Calendar.MONDAY),
+            Pair(ivTuesday, Calendar.TUESDAY),
+            Pair(ivWednesday, Calendar.WEDNESDAY),
+            Pair(ivThursday, Calendar.THURSDAY),
+            Pair(ivFriday, Calendar.FRIDAY),
+            Pair(ivSaturday, Calendar.SATURDAY)
+        )
 
-
+        daysOfWeek.forEach { (imageView, dayOfWeek) ->
+            val day = today.clone() as Calendar
+            day.set(Calendar.DAY_OF_WEEK, dayOfWeek)
+            if (isSameDay(day, today)) {
+                // Check today's progress
+                if (totalHours >= userGoals.first) {
+                    imageView.setImageResource(R.drawable.ic_check_circle) // Met progression
+                } else {
+                    imageView.setImageResource(R.drawable.ic_missed_circle) // Missed progression
+                }
+            } else if (entries.any { isSameDay(it.startDate, day) }) {
+                imageView.setImageResource(R.drawable.ic_check_circle) // Met progression
+            } else {
+                imageView.setImageResource(R.drawable.ic_missed_circle) // Missed progression
+            }
+        }
+    }
 
     private fun fetchUserGoals(userId: String) {
         databaseOperationsManager.fetchUserGoals(FirebaseDatabase.getInstance(), userId) { minHours, maxHours ->
             userGoals = Pair(minHours.toFloat(), maxHours.toFloat())
         }
     }
-
 
     private fun calculateStreak(entries: List<TimesheetManager.TimesheetEntry>): Int {
         val today = Calendar.getInstance()
