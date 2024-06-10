@@ -2,6 +2,8 @@ package com.example.timewise
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.PorterDuff
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -22,6 +24,7 @@ open class BaseActivity : AppCompatActivity() {
         val toolbarBack: ImageView? = findViewById(R.id.btnToolbarBack)
         val toolbarProfile: ImageView? = findViewById(R.id.imgToolbarProfile)
         val toolbarHome: ImageView? = findViewById(R.id.imgToolbarLogo)
+        val imgToolbarExtra: ImageView = findViewById(R.id.imgToolbarExtra)
 
         toolbarHome?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
 
@@ -40,6 +43,15 @@ open class BaseActivity : AppCompatActivity() {
             startActivity(homeIntent)
         }
 
+
+        imgToolbarExtra.setOnClickListener {
+            val intent = Intent(this, DailyProgress::class.java)
+            startActivity(intent)
+        }
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(0f)
+        val filter = ColorMatrixColorFilter(colorMatrix)
+        imgToolbarExtra.colorFilter = filter
 
     }
     fun updateToolbarColor(hexCode: String) {
