@@ -74,9 +74,7 @@ class Analytics : BaseActivity() {
             timesheetNamesMap = fetchedTimesheetNamesMap
 
             // Flatten the timesheet entries map to a list of entries with colors
-            timesheetEntries = fetchedEntriesMap.flatMap { entry ->
-                entry.value.map { it.apply { color = fetchedTimesheetNamesMap[entry.key] ?: "#FFFFFF" } }
-            }
+            timesheetEntries = fetchedEntriesMap.values.flatten()
 
             updateTimesheetEntries()
             updateCharts()
@@ -169,6 +167,7 @@ class Analytics : BaseActivity() {
             chart.invalidate()
         }
     }
+
 
     private fun getChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()

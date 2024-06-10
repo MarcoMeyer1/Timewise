@@ -282,19 +282,19 @@ class DatabaseOperationsManager(private val context: Context) {
                     val timesheetId = timesheetSnapshot.key ?: continue
                     val timesheetName = timesheetSnapshot.child("name").getValue(String::class.java) ?: "Unknown"
                     val timesheetColor = timesheetSnapshot.child("color").getValue(String::class.java) ?: "#FFFFFF"
-                    timesheetNamesMap[timesheetId] = timesheetColor // Store the color instead of the name
+                    timesheetNamesMap[timesheetId] = timesheetName // Store the name
                     val entriesSnapshot = timesheetSnapshot.child("entries")
                     val entriesList = mutableListOf<TimesheetManager.TimesheetEntry>()
                     for (entrySnapshot in entriesSnapshot.children) {
                         val entryMap = entrySnapshot.value as? HashMap<*, *>
                         if (entryMap != null) {
                             val entry = TimesheetManager.TimesheetEntry(
-                                name = entryMap["eventName"] as String? ?: "",
+                                name = entryMap["name"] as String? ?: "",
                                 startDate = Calendar.getInstance().apply { timeInMillis = entryMap["startDate"] as Long? ?: 0L },
                                 endDate = Calendar.getInstance().apply { timeInMillis = entryMap["endDate"] as Long? ?: 0L },
-                                isAllDay = entryMap["allDay"] as Boolean? ?: false,
+                                isAllDay = entryMap["isAllDay"] as Boolean? ?: false,
                                 category = entryMap["category"] as String?,
-                                photo = (entryMap["photoUrl"] as String?)?.let { Uri.parse(it) },
+                                photo = (entryMap["photo"] as String?)?.let { Uri.parse(it) },
                                 color = timesheetColor // Assign the color to each entry
                             )
                             if (entry.startDate.timeInMillis in start..end) {

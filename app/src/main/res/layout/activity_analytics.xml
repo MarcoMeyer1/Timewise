@@ -81,32 +81,13 @@
             android:layout_marginEnd="16dp"/>
 
         <TextView
-            android:id="@+id/anotherGraphLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="List of Entries based on Dates"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/chart"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/timesheetEntryList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/anotherGraphLabel"
-            android:layout_marginTop="16dp"/>
-
-        <TextView
             android:id="@+id/graph2Label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Total Hours Worked Each Day"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/timesheetEntryList"
+            app:layout_constraintTop_toBottomOf="@id/chart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="24dp"/>
@@ -121,6 +102,25 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"/>
+
+        <TextView
+            android:id="@+id/anotherGraphLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="List of Entries based on Dates"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/dailyChart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/timesheetEntryList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/anotherGraphLabel"
+            android:layout_marginTop="16dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
