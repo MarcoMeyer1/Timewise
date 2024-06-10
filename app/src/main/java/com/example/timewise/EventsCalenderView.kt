@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 
@@ -47,7 +48,9 @@ class EventsCalenderView : BaseActivity() {
 
     private fun updateEntries(selectedDate: Calendar) {
         val db = FirebaseDatabase.getInstance()
-        databaseOperationsManager.fetchAllTimesheetEntriesForUser(db) { entries ->
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        databaseOperationsManager.fetchAllTimesheetEntriesForUser(db, userId) { entries ->
             val filteredEntries = entries.filter {
                 val entryDate = Calendar.getInstance().apply { timeInMillis = it.startDate.timeInMillis }
                 entryDate.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
@@ -60,6 +63,7 @@ class EventsCalenderView : BaseActivity() {
             }
         }
     }
+
 
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         entry.photo?.let { photoUri ->

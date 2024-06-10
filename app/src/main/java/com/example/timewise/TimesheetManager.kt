@@ -25,8 +25,10 @@ object TimesheetManager {
         var endDate: Calendar = Calendar.getInstance(),
         var isAllDay: Boolean = false,
         var category: String? = null,
-        var photo: Uri? = null
+        var photo: Uri? = null,
+        var color: String = "" // Add this property
     )
+
 
 
 

@@ -149,47 +149,43 @@ class DatabaseOperationsManager(private val context: Context) {
 
     fun fetchAllTimesheetEntriesForUser(
         db: FirebaseDatabase,
+        userId: String,
         completion: (List<TimesheetManager.TimesheetEntry>) -> Unit
     ) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            val userId = currentUser.uid
-            val userRef = db.getReference("users/$userId/timesheets")
+        val userRef = db.getReference("users/$userId/timesheets")
 
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val allEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
-                    for (timesheetSnapshot in snapshot.children) {
-                        val entriesSnapshot = timesheetSnapshot.child("entries")
-                        for (entrySnapshot in entriesSnapshot.children) {
-                            val entry = TimesheetManager.TimesheetEntry().apply {
-                                name = entrySnapshot.child("eventName").getValue(String::class.java) ?: ""
-                                startDate = Calendar.getInstance().apply {
-                                    timeInMillis = entrySnapshot.child("startDate").getValue(Long::class.java) ?: 0L
-                                }
-                                endDate = Calendar.getInstance().apply {
-                                    timeInMillis = entrySnapshot.child("endDate").getValue(Long::class.java) ?: 0L
-                                }
-                                isAllDay = entrySnapshot.child("allDay").getValue(Boolean::class.java) ?: false
-                                category = entrySnapshot.child("category").getValue(String::class.java)
-                                photo = entrySnapshot.child("photo").getValue(String::class.java)?.let { Uri.parse(it) }
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val allEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
+                for (timesheetSnapshot in snapshot.children) {
+                    val entriesSnapshot = timesheetSnapshot.child("entries")
+                    for (entrySnapshot in entriesSnapshot.children) {
+                        val entry = TimesheetManager.TimesheetEntry().apply {
+                            name = entrySnapshot.child("eventName").getValue(String::class.java) ?: ""
+                            startDate = Calendar.getInstance().apply {
+                                timeInMillis = entrySnapshot.child("startDate").getValue(Long::class.java) ?: 0L
                             }
-                            allEntries.add(entry)
+                            endDate = Calendar.getInstance().apply {
+                                timeInMillis = entrySnapshot.child("endDate").getValue(Long::class.java) ?: 0L
+                            }
+                            isAllDay = entrySnapshot.child("allDay").getValue(Boolean::class.java) ?: false
+                            category = entrySnapshot.child("category").getValue(String::class.java)
+                            photo = entrySnapshot.child("photo").getValue(String::class.java)?.let { Uri.parse(it) }
+                            color = timesheetSnapshot.child("color").getValue(String::class.java) ?: "" // Get color from timesheet
                         }
+                        allEntries.add(entry)
                     }
-                    completion(allEntries)
                 }
+                completion(allEntries)
+            }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("DatabaseOperationsManager", "Error fetching entries: ${error.message}")
-                    completion(emptyList())
-                }
-            })
-        } else {
-            Log.e("DatabaseOperationsManager", "No current user logged in")
-            completion(emptyList())
-        }
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DatabaseOperationsManager", "Error fetching entries: ${error.message}")
+                completion(emptyList())
+            }
+        })
     }
+
 
 
     fun fetchTimesheetEntriesBetweenDates(
