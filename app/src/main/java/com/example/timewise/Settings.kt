@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class Settings : BaseActivity() {
     private lateinit var minHoursEditText: EditText
@@ -27,7 +28,7 @@ class Settings : BaseActivity() {
         maxHoursEditText = findViewById(R.id.maxHoursEditText)
         confirmButton = findViewById(R.id.confirmButton)
 
-        loadSettings()  // Call to load settings
+        loadSettings()
 
         confirmButton.setOnClickListener {
             saveSettings(minHoursEditText.text.toString(), maxHoursEditText.text.toString())
@@ -40,19 +41,41 @@ class Settings : BaseActivity() {
     private fun saveSettings(minHours: String?, maxHours: String?) {
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val editor = prefs.edit()
-        editor.putString("MinHours", minHours ?: "0") // Default to "0" if null
-        editor.putString("MaxHours", maxHours ?: "0") // Default to "0" if null
+        editor.putString("MinHours", minHours ?: "0")
+        editor.putString("MaxHours", maxHours ?: "0")
         editor.apply()
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val database = FirebaseDatabase.getInstance()
+            val userRef = database.getReference("users").child(userId).child("dailyGoal")
+
+            val updates = mapOf(
+                "minHours" to (minHours?.toIntOrNull() ?: 0),
+                "maxHours" to (maxHours?.toIntOrNull() ?: 0)
+            )
+
+            userRef.updateChildren(updates).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    showToast("Min and Max hours updated successfully")
+                } else {
+                    showToast("Failed to update settings")
+                }
+            }
+        }
     }
 
     private fun loadSettings() {
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
-        // Load the settings with defaults if they are not set yet
         val minHours = prefs.getString("MinHours", "0")
         val maxHours = prefs.getString("MaxHours", "0")
 
-        // Update UI with loaded settings
         minHoursEditText.setText(minHours)
         maxHoursEditText.setText(maxHours)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
