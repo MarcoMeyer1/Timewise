@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
@@ -76,10 +75,13 @@ class Analytics : BaseActivity() {
             // Flatten the timesheet entries map to a list of entries with colors
             timesheetEntries = fetchedEntriesMap.values.flatten()
 
-            updateTimesheetEntries()
-            updateCharts()
+            runOnUiThread {
+                updateTimesheetEntries()
+                updateCharts()
+            }
         }
     }
+
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         entry.photo?.let { photoUri ->
             showPhoto(photoUri)
@@ -167,7 +169,6 @@ class Analytics : BaseActivity() {
             chart.invalidate()
         }
     }
-
 
     private fun getChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()
