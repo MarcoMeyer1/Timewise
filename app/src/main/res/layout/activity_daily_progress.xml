@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".MainActivity">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivFlameIcon"
+        android:layout_width="286dp"
+        android:layout_height="149dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/img"
+        app:layout_constraintTop_toBottomOf="@id/include"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvStreakNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="#50000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:text="4"
+        android:textColor="#000000"
+        android:textDirection="firstStrong"
+        android:textSize="72sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/ivFlameIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvWeekStreak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Day Streak"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/tvStreakNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You are doing really great, Anna!"
+        android:textColor="#666666"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/tvWeekStreak"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="5dp" />
+
+    <LinearLayout
+        android:id="@+id/llDays"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp">
+
+        <LinearLayout
+            android:id="@+id/llMonday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/tvMonday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="M"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivMonday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/tvTuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="T"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivTuesday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llWednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/tvWednesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="W"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivWednesday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llThursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/tvThursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="T"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivThursday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llFriday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/tvFriday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="F"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivFriday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llSaturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/tvSaturday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="S"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivSaturday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llSunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="S"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/ivSunday"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_check_circle" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvDailyProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daily Progress"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/llDays"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp" />
+
+    <RelativeLayout
+        android:id="@+id/progressBarContainer"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        app:layout_constraintTop_toBottomOf="@id/tvDailyProgress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:max="100"
+            android:progress="34"
+            android:indeterminateDrawable="@drawable/progress_bar_custom"
+            android:progressDrawable="@drawable/progress_bar_custom" />
+
+        <TextView
+            android:id="@+id/progressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 hours to go"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
