@@ -74,13 +74,14 @@ class Analytics : BaseActivity() {
             timesheetNamesMap = fetchedTimesheetNamesMap
 
             // Flatten the timesheet entries map to a list of entries with colors
-            timesheetEntries = fetchedEntriesMap.values.flatten()
+            timesheetEntries = fetchedEntriesMap.flatMap { entry ->
+                entry.value.map { it.apply { color = fetchedTimesheetNamesMap[entry.key] ?: "#FFFFFF" } }
+            }
 
             updateTimesheetEntries()
             updateCharts()
         }
     }
-
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         entry.photo?.let { photoUri ->
             showPhoto(photoUri)
