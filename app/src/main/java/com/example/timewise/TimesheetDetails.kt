@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class TimesheetDetails : AppCompatActivity() {
+class TimesheetDetails : BaseActivity() {
 
     private lateinit var timesheetNameTextView: TextView
     private lateinit var entryCountTextView: TextView
