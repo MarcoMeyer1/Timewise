@@ -1,5 +1,6 @@
 package com.example.timewise
 
+import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -65,6 +66,14 @@ class TimeSheetAdapter(private var timesheets: MutableList<TimesheetManager.Time
             // Set click listener for editing timesheet
             editButton.setOnClickListener {
                 onTimesheetEditListener?.onEditClicked(timesheet)
+            }
+
+            // Set click listener for the entire card view
+            cardView.setOnClickListener {
+                val context = itemView.context
+                val intent = Intent(context, TimesheetDetails::class.java)
+                intent.putExtra("timesheetId", timesheet.id)
+                context.startActivity(intent)
             }
         }
     }

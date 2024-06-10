@@ -63,7 +63,6 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
         }
     }
 
-
     override fun onEditClicked(timesheet: TimesheetManager.Timesheet) {
         showEditDialog(timesheet)
     }
