@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +24,8 @@ class Analytics : BaseActivity() {
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
     private lateinit var timesheetEntryList: RecyclerView
+    private lateinit var chart: BarChart
+    private lateinit var dailyChart: BarChart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,32 +34,38 @@ class Analytics : BaseActivity() {
         setupRecyclerView()
 
         val selectDateButton: Button = findViewById(R.id.selectDateButton)
-        val chart: BarChart = findViewById(R.id.chart)
+        chart = findViewById(R.id.chart)
+        dailyChart = findViewById(R.id.dailyChart)
 
         updateToolbarColor("#FF6262")
 
         selectDateButton.setOnClickListener {
             selectDateRange {
-                setupChart(chart)
-                updateTimesheetEntries()
+                updateData()
             }
         }
 
         // Load all data initially
-        setupChart(chart)
-        updateTimesheetEntries()
+        initializeDateRange()
+        updateData()
     }
 
     private fun initializeDateRange() {
         startDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -7) }  // One week ago
         endDate = Calendar.getInstance()  // Today
-        updateTimesheetEntries()
     }
 
     private fun setupRecyclerView() {
         timesheetEntryList = findViewById(R.id.timesheetEntryList)
         timesheetEntryList.layoutManager = LinearLayoutManager(this)
         timesheetEntryList.adapter = TimesheetEntryAdapter(mutableListOf(), this::handleEntryClick)
+    }
+
+    private fun updateData() {
+        val entries = getTimesheetEntries()
+        updateTimesheetEntries(entries)
+        setupChart(entries)
+        setupDailyChart(entries)
     }
 
     private fun getTimesheetEntries(): List<TimesheetManager.TimesheetEntry> {
@@ -75,7 +84,9 @@ class Analytics : BaseActivity() {
         return entries
     }
 
-
+    private fun updateTimesheetEntries(entries: List<TimesheetManager.TimesheetEntry>) {
+        (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
+    }
 
     private fun handleEntryClick(entry: TimesheetManager.TimesheetEntry) {
         entry.photo?.let { photoUri ->
@@ -83,11 +94,6 @@ class Analytics : BaseActivity() {
         } ?: run {
             Toast.makeText(this, "No picture", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun updateTimesheetEntries() {
-        val entries = getTimesheetEntries()
-        (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
     }
 
     private fun showPhoto(photoUri: Uri) {
@@ -111,20 +117,19 @@ class Analytics : BaseActivity() {
                     set(Calendar.MILLISECOND, 999)
                 }
                 onDatesSelected()
-                updateTimesheetEntries()
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
         }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    private fun setupChart(chart: BarChart) {
-        val entries = getChartData()
-        if (entries.isEmpty()) {
+    private fun setupChart(entries: List<TimesheetManager.TimesheetEntry>) {
+        val dataEntries = getChartData(entries)
+        if (dataEntries.isEmpty()) {
             chart.clear()
             Toast.makeText(this, "No data to display", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val dataSet = BarDataSet(entries, "Hours by Category")
+        val dataSet = BarDataSet(dataEntries, "Hours by Timesheet")
         val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
         val db = TimesheetManager.getDatabase()
 
@@ -151,9 +156,66 @@ class Analytics : BaseActivity() {
         }
     }
 
-    private fun getChartData(): MutableList<BarEntry> {
-        val entries = mutableListOf<BarEntry>()
-        // Populate the entries list with data
-        return entries
+    private fun getChartData(entries: List<TimesheetManager.TimesheetEntry>): MutableList<BarEntry> {
+        val dataEntries = mutableListOf<BarEntry>()
+
+        val timesheetHours = mutableMapOf<String, Float>()
+        for (entry in entries) {
+            val hours = (entry.endDate.timeInMillis - entry.startDate.timeInMillis) / (1000 * 60 * 60).toFloat()
+            timesheetHours[entry.name] = timesheetHours.getOrDefault(entry.name, 0f) + hours
+        }
+
+        timesheetHours.entries.forEachIndexed { index, entry ->
+            dataEntries.add(BarEntry(index.toFloat(), entry.value))
+        }
+
+        return dataEntries
+    }
+
+    private fun setupDailyChart(entries: List<TimesheetManager.TimesheetEntry>) {
+        val dataEntries = getDailyChartData(entries)
+        if (dataEntries.isEmpty()) {
+            dailyChart.clear()
+            Toast.makeText(this, "No data to display", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val dataSet = BarDataSet(dataEntries, "Hours per Day")
+        dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
+        dataSet.valueTextSize = 12f
+
+        val data = BarData(dataSet)
+        dailyChart.data = data
+        dailyChart.description.isEnabled = false
+
+        val legend = dailyChart.legend
+        legend.isEnabled = true
+        legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        legend.orientation = Legend.LegendOrientation.HORIZONTAL
+        legend.setDrawInside(false)
+        legend.form = Legend.LegendForm.SQUARE
+        legend.formSize = 8f
+        legend.textSize = 12f
+
+        dailyChart.animateY(1000)
+        dailyChart.invalidate()
+    }
+
+    private fun getDailyChartData(entries: List<TimesheetManager.TimesheetEntry>): MutableList<BarEntry> {
+        val dataEntries = mutableListOf<BarEntry>()
+
+        val dailyHours = mutableMapOf<String, Float>()
+        for (entry in entries) {
+            val date = "${entry.startDate.get(Calendar.YEAR)}-${entry.startDate.get(Calendar.MONTH) + 1}-${entry.startDate.get(Calendar.DAY_OF_MONTH)}"
+            val hours = (entry.endDate.timeInMillis - entry.startDate.timeInMillis) / (1000 * 60 * 60).toFloat()
+            dailyHours[date] = dailyHours.getOrDefault(date, 0f) + hours
+        }
+
+        dailyHours.entries.forEachIndexed { index, entry ->
+            dataEntries.add(BarEntry(index.toFloat(), entry.value))
+        }
+
+        return dataEntries
     }
 }

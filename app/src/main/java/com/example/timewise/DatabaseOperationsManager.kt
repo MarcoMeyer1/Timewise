@@ -223,11 +223,19 @@ class DatabaseOperationsManager(private val context: Context) {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val timesheetEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
                 for (timesheetSnapshot in snapshot.children) {
-                    val timesheetId = timesheetSnapshot.key ?: continue
                     val entriesSnapshot = timesheetSnapshot.child("entries")
                     for (entrySnapshot in entriesSnapshot.children) {
-                        val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
-                        if (entry != null && entry.startDate.timeInMillis in start..end) {
+                        val entry = TimesheetManager.TimesheetEntry()
+                        val startDateMillis = entrySnapshot.child("startDate").getValue(Long::class.java) ?: 0L
+                        val endDateMillis = entrySnapshot.child("endDate").getValue(Long::class.java) ?: 0L
+                        entry.name = entrySnapshot.child("eventName").getValue(String::class.java) ?: ""
+                        entry.startDate = Calendar.getInstance().apply { timeInMillis = startDateMillis }
+                        entry.endDate = Calendar.getInstance().apply { timeInMillis = endDateMillis }
+                        entry.isAllDay = entrySnapshot.child("allDay").getValue(Boolean::class.java) ?: false
+                        entry.category = entrySnapshot.child("category").getValue(String::class.java)
+                        entry.photo = entrySnapshot.child("photo").getValue(String::class.java)?.let { Uri.parse(it) }
+                        entry.color = timesheetSnapshot.child("color").getValue(String::class.java) ?: ""
+                        if (entry.startDate.timeInMillis in start..end) {
                             timesheetEntries.add(entry)
                         }
                     }
@@ -241,6 +249,9 @@ class DatabaseOperationsManager(private val context: Context) {
             }
         })
     }
+
+
+
 
     fun fetchColorsForTimesheets(
         db: FirebaseDatabase,
