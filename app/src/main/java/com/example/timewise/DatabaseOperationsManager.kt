@@ -208,6 +208,21 @@ class DatabaseOperationsManager(private val context: Context) {
         })
     }
 
+    fun fetchUserGoals(db: FirebaseDatabase, userId: String, completion: (Float, Float) -> Unit) {
+        val userRef = db.getReference("users/$userId/dailyGoal")
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val minHours = snapshot.child("minHours").getValue(Float::class.java) ?: 0f
+                val maxHours = snapshot.child("maxHours").getValue(Float::class.java) ?: 0f
+                completion(minHours, maxHours)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DatabaseOperationsManager", "Error fetching user goals: $error")
+                completion(0f, 0f)
+            }
+        })
+    }
 
 
     fun fetchTimesheetEntriesBetweenDates(
@@ -223,11 +238,19 @@ class DatabaseOperationsManager(private val context: Context) {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val timesheetEntries = mutableListOf<TimesheetManager.TimesheetEntry>()
                 for (timesheetSnapshot in snapshot.children) {
-                    val timesheetId = timesheetSnapshot.key ?: continue
                     val entriesSnapshot = timesheetSnapshot.child("entries")
                     for (entrySnapshot in entriesSnapshot.children) {
-                        val entry = entrySnapshot.getValue(TimesheetManager.TimesheetEntry::class.java)
-                        if (entry != null && entry.startDate.timeInMillis in start..end) {
+                        val entry = TimesheetManager.TimesheetEntry()
+                        val startDateMillis = entrySnapshot.child("startDate").getValue(Long::class.java) ?: 0L
+                        val endDateMillis = entrySnapshot.child("endDate").getValue(Long::class.java) ?: 0L
+                        entry.name = entrySnapshot.child("eventName").getValue(String::class.java) ?: ""
+                        entry.startDate = Calendar.getInstance().apply { timeInMillis = startDateMillis }
+                        entry.endDate = Calendar.getInstance().apply { timeInMillis = endDateMillis }
+                        entry.isAllDay = entrySnapshot.child("allDay").getValue(Boolean::class.java) ?: false
+                        entry.category = entrySnapshot.child("category").getValue(String::class.java)
+                        entry.photo = entrySnapshot.child("photo").getValue(String::class.java)?.let { Uri.parse(it) }
+                        entry.color = timesheetSnapshot.child("color").getValue(String::class.java) ?: ""
+                        if (entry.startDate.timeInMillis in start..end) {
                             timesheetEntries.add(entry)
                         }
                     }
@@ -241,6 +264,61 @@ class DatabaseOperationsManager(private val context: Context) {
             }
         })
     }
+
+    fun fetchTimesheetsWithEntries(
+        db: FirebaseDatabase,
+        userId: String,
+        start: Long,
+        end: Long,
+        completion: (Map<String, List<TimesheetManager.TimesheetEntry>>, Map<String, String>) -> Unit
+    ) {
+        val timesheetsRef = db.getReference("users/$userId/timesheets")
+
+        timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val timesheetEntriesMap = mutableMapOf<String, MutableList<TimesheetManager.TimesheetEntry>>()
+                val timesheetNamesMap = mutableMapOf<String, String>()
+                for (timesheetSnapshot in snapshot.children) {
+                    val timesheetId = timesheetSnapshot.key ?: continue
+                    val timesheetName = timesheetSnapshot.child("name").getValue(String::class.java) ?: "Unknown"
+                    val timesheetColor = timesheetSnapshot.child("color").getValue(String::class.java) ?: "#FFFFFF"
+                    timesheetNamesMap[timesheetId] = timesheetName // Store the name
+                    val entriesSnapshot = timesheetSnapshot.child("entries")
+                    val entriesList = mutableListOf<TimesheetManager.TimesheetEntry>()
+                    for (entrySnapshot in entriesSnapshot.children) {
+                        val entryMap = entrySnapshot.value as? HashMap<*, *>
+                        if (entryMap != null) {
+                            val entry = TimesheetManager.TimesheetEntry(
+                                name = entryMap["name"] as String? ?: "",
+                                startDate = Calendar.getInstance().apply { timeInMillis = entryMap["startDate"] as Long? ?: 0L },
+                                endDate = Calendar.getInstance().apply { timeInMillis = entryMap["endDate"] as Long? ?: 0L },
+                                isAllDay = entryMap["isAllDay"] as Boolean? ?: false,
+                                category = entryMap["category"] as String?,
+                                photo = (entryMap["photo"] as String?)?.let { Uri.parse(it) },
+                                color = timesheetColor // Assign the color to each entry
+                            )
+                            if (entry.startDate.timeInMillis in start..end) {
+                                entriesList.add(entry)
+                            }
+                        }
+                    }
+                    timesheetEntriesMap[timesheetId] = entriesList
+                }
+                Log.d("DatabaseOperationsManager", "Fetched Timesheet Entries Map: $timesheetEntriesMap")
+                completion(timesheetEntriesMap, timesheetNamesMap)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DatabaseOperationsManager", "Error fetching timesheet entries: ${error.message}")
+                completion(emptyMap(), emptyMap())
+            }
+        })
+    }
+
+
+
+
+
 
     fun fetchColorsForTimesheets(
         db: FirebaseDatabase,
