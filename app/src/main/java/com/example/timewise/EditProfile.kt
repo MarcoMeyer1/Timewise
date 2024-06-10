@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 
-class EditProfile : AppCompatActivity() {
+class EditProfile : BaseActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
@@ -41,7 +41,6 @@ class EditProfile : AppCompatActivity() {
 
         pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
             if (uri != null) {
-                // Handle the selected image URI, e.g., update ImageView or store the URI
                 updateProfilePicture(uri)
             } else {
                 Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show()
@@ -50,7 +49,6 @@ class EditProfile : AppCompatActivity() {
 
         val btnChangePicture: Button = findViewById(R.id.btnEditChangePicture)
         btnChangePicture.setOnClickListener {
-            // Launch the media picker when button is clicked
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 

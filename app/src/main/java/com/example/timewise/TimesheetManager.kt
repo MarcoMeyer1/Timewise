@@ -31,7 +31,6 @@ object TimesheetManager {
 
 
 
-
     fun addTimesheet(timesheet: Timesheet) {
         currentUser?.uid?.let { userId ->
             database.getReference("users/$userId/timesheets").push().setValue(timesheet)
@@ -44,7 +43,7 @@ object TimesheetManager {
         }
     }
 
-    fun fetchTimesheets(callback: (List<Timesheet>, Map<String, String>) -> Unit) {
+    fun fetchTimesheets(callback: (List<Timesheet>, Map<String, String>, Map<String, List<TimesheetEntry>>) -> Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             val userId = currentUser.uid
@@ -54,27 +53,48 @@ object TimesheetManager {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val timesheets = mutableListOf<Timesheet>()
                     val timesheetIdMap = mutableMapOf<String, String>()
+                    val timesheetEntriesMap = mutableMapOf<String, List<TimesheetEntry>>()
+
                     for (timesheetSnapshot in snapshot.children) {
                         val timesheet = timesheetSnapshot.getValue(Timesheet::class.java)
-                        timesheet?.let {
-                            timesheets.add(it)
-                            timesheetIdMap[it.name] = timesheetSnapshot.key ?: ""
+                        val timesheetId = timesheetSnapshot.key
+                        if (timesheet != null && timesheetId != null) {
+                            timesheets.add(timesheet)
+                            timesheetIdMap[timesheet.name] = timesheetId
+
+                            val entriesSnapshot = timesheetSnapshot.child("entries")
+                            val entries = mutableListOf<TimesheetEntry>()
+                            for (entrySnapshot in entriesSnapshot.children) {
+                                val entryMap = entrySnapshot.value as? HashMap<*, *>
+                                if (entryMap != null) {
+                                    val entry = TimesheetEntry(
+                                        name = entryMap["name"] as String? ?: "",
+                                        startDate = Calendar.getInstance().apply { timeInMillis = entryMap["startDate"] as Long? ?: 0L },
+                                        endDate = Calendar.getInstance().apply { timeInMillis = entryMap["endDate"] as Long? ?: 0L },
+                                        isAllDay = entryMap["isAllDay"] as Boolean? ?: false,
+                                        category = entryMap["category"] as String?,
+                                        photo = (entryMap["photo"] as String?)?.let { Uri.parse(it) }
+                                    )
+                                    entries.add(entry)
+                                }
+                            }
+                            timesheet.entries = entries.toMutableList()  // Update the entries in the timesheet
+                            timesheetEntriesMap[timesheetId] = entries
                         }
                     }
-                    callback(timesheets, timesheetIdMap)
+                    callback(timesheets, timesheetIdMap, timesheetEntriesMap)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("TimesheetManager", "Error fetching timesheets: ${error.message}")
-                    callback(emptyList(), emptyMap())
+                    callback(emptyList(), emptyMap(), emptyMap())
                 }
             })
         } else {
             Log.e("TimesheetManager", "No current user logged in")
-            callback(emptyList(), emptyMap())
+            callback(emptyList(), emptyMap(), emptyMap())
         }
     }
-
 
     fun getAuth(): FirebaseAuth {
         return auth
