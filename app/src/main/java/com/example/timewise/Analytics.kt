@@ -72,6 +72,10 @@ class Analytics : BaseActivity() {
         DatabaseOperationsManager(this).fetchTimesheetsWithEntries(db, userId, start, end) { fetchedEntriesMap, fetchedTimesheetNamesMap ->
             timesheetEntriesMap = fetchedEntriesMap
             timesheetNamesMap = fetchedTimesheetNamesMap
+
+            // Flatten the timesheet entries map to a list of entries with colors
+            timesheetEntries = fetchedEntriesMap.values.flatten()
+
             updateTimesheetEntries()
             updateCharts()
         }
@@ -165,9 +169,6 @@ class Analytics : BaseActivity() {
         }
     }
 
-
-
-
     private fun getChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()
 
@@ -181,7 +182,6 @@ class Analytics : BaseActivity() {
 
         return entries
     }
-
 
     private fun setupDailyChart(chart: BarChart, entries: List<BarEntry>) {
         if (entries.isEmpty()) {
@@ -212,7 +212,6 @@ class Analytics : BaseActivity() {
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-// Inside the setupDailyChart function
         val xAxis = chart.xAxis
         xAxis.valueFormatter = object : IndexAxisValueFormatter() {
             override fun getFormattedValue(value: Float): String {
@@ -260,7 +259,6 @@ class Analytics : BaseActivity() {
         chart.animateY(1000)
         chart.invalidate()
     }
-
 
     private fun getDailyChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()
