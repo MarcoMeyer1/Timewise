@@ -14,11 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LimitLine
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Analytics : BaseActivity() {
@@ -191,15 +194,27 @@ class Analytics : BaseActivity() {
 
         val dailyHours = getDailyHours()
 
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+// Inside the setupDailyChart function
         val xAxis = chart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(entries.mapIndexed { index, _ ->
-            val date = dailyHours.keys.sorted()[index]
-            if (date.length >= 10) {
-                "${date.substring(8, 10)}/${date.substring(5, 7)}"
-            } else {
-                date
+        xAxis.valueFormatter = object : IndexAxisValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val date = dailyHours.keys.sorted().getOrNull(value.toInt())
+                return date?.let {
+                    try {
+                        val parsedDate = dateFormat.parse(it)
+                        parsedDate?.let { parsed ->
+                            val formattedDate = SimpleDateFormat("dd/MM", Locale.getDefault()).format(parsed)
+                            formattedDate
+                        } ?: ""
+                    } catch (e: ParseException) {
+                        ""
+                    }
+                } ?: ""
             }
-        })
+        }
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.granularity = 1f
 
         // Fetch the user's goals and add limit lines
