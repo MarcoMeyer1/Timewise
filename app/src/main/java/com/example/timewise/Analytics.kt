@@ -31,6 +31,8 @@ class Analytics : BaseActivity() {
     private lateinit var chart: BarChart
     private lateinit var dailyChart: BarChart
     private var timesheetEntries: List<TimesheetManager.TimesheetEntry> = emptyList()
+    private var timesheetEntriesMap: Map<String, List<TimesheetManager.TimesheetEntry>> = emptyMap()
+    private var timesheetNamesMap: Map<String, String> = emptyMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +69,9 @@ class Analytics : BaseActivity() {
         val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
         val db = TimesheetManager.getDatabase()
 
-        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(db, userId, start, end) { fetchedEntries ->
-            timesheetEntries = fetchedEntries
+        DatabaseOperationsManager(this).fetchTimesheetsWithEntries(db, userId, start, end) { fetchedEntriesMap, fetchedTimesheetNamesMap ->
+            timesheetEntriesMap = fetchedEntriesMap
+            timesheetNamesMap = fetchedTimesheetNamesMap
             updateTimesheetEntries()
             updateCharts()
         }
@@ -145,27 +148,40 @@ class Analytics : BaseActivity() {
             legend.formSize = 8f
             legend.textSize = 12f
 
+            // Set x-axis labels
+            val xAxis = chart.xAxis
+            val timesheetNames = timesheetEntriesMap.keys.map { timesheetId ->
+                timesheetNamesMap[timesheetId] ?: "Unknown"
+            }
+            xAxis.valueFormatter = IndexAxisValueFormatter(timesheetNames)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.granularity = 1f
+            xAxis.setDrawLabels(true)
+            xAxis.setDrawGridLines(false)
+            xAxis.setDrawAxisLine(true)
+
             chart.animateY(1000)
             chart.invalidate()
         }
     }
 
+
+
+
     private fun getChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()
 
-        val timesheetHours = timesheetEntries.groupBy { it.name }
-            .mapValues { entry ->
-                entry.value.map {
-                    ((it.endDate.timeInMillis - it.startDate.timeInMillis) / (1000 * 60 * 60)).toFloat()
-                }.sum()
-            }
-
-        timesheetHours.entries.forEachIndexed { index, entry ->
-            entries.add(BarEntry(index.toFloat(), entry.value))
+        // Generate BarEntry for each timesheet
+        timesheetEntriesMap.entries.forEachIndexed { index, entry ->
+            val totalHours = entry.value.sumByDouble {
+                ((it.endDate.timeInMillis - it.startDate.timeInMillis) / (1000 * 60 * 60)).toDouble()
+            }.toFloat()
+            entries.add(BarEntry(index.toFloat(), totalHours))
         }
 
         return entries
     }
+
 
     private fun setupDailyChart(chart: BarChart, entries: List<BarEntry>) {
         if (entries.isEmpty()) {

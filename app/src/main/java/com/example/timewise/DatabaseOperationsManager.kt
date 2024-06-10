@@ -265,6 +265,55 @@ class DatabaseOperationsManager(private val context: Context) {
         })
     }
 
+    fun fetchTimesheetsWithEntries(
+        db: FirebaseDatabase,
+        userId: String,
+        start: Long,
+        end: Long,
+        completion: (Map<String, List<TimesheetManager.TimesheetEntry>>, Map<String, String>) -> Unit
+    ) {
+        val timesheetsRef = db.getReference("users/$userId/timesheets")
+
+        timesheetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val timesheetEntriesMap = mutableMapOf<String, MutableList<TimesheetManager.TimesheetEntry>>()
+                val timesheetNamesMap = mutableMapOf<String, String>()
+                for (timesheetSnapshot in snapshot.children) {
+                    val timesheetId = timesheetSnapshot.key ?: continue
+                    val timesheetName = timesheetSnapshot.child("name").getValue(String::class.java) ?: "Unknown"
+                    timesheetNamesMap[timesheetId] = timesheetName
+                    val entriesSnapshot = timesheetSnapshot.child("entries")
+                    val entriesList = mutableListOf<TimesheetManager.TimesheetEntry>()
+                    for (entrySnapshot in entriesSnapshot.children) {
+                        val entryMap = entrySnapshot.value as? HashMap<*, *>
+                        if (entryMap != null) {
+                            val entry = TimesheetManager.TimesheetEntry(
+                                name = entryMap["name"] as String? ?: "",
+                                startDate = Calendar.getInstance().apply { timeInMillis = entryMap["startDate"] as Long? ?: 0L },
+                                endDate = Calendar.getInstance().apply { timeInMillis = entryMap["endDate"] as Long? ?: 0L },
+                                isAllDay = entryMap["isAllDay"] as Boolean? ?: false,
+                                category = entryMap["category"] as String?,
+                                photo = (entryMap["photo"] as String?)?.let { Uri.parse(it) }
+                            )
+                            if (entry.startDate.timeInMillis in start..end) {
+                                entriesList.add(entry)
+                            }
+                        }
+                    }
+                    timesheetEntriesMap[timesheetId] = entriesList
+                }
+                Log.d("DatabaseOperationsManager", "Fetched Timesheet Entries Map: $timesheetEntriesMap")
+                completion(timesheetEntriesMap, timesheetNamesMap)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DatabaseOperationsManager", "Error fetching timesheet entries: ${error.message}")
+                completion(emptyMap(), emptyMap())
+            }
+        })
+    }
+
+
 
 
 
