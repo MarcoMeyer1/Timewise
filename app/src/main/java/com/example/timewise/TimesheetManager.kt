@@ -1,11 +1,13 @@
 package com.example.timewise
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import java.util.Calendar
+import android.widget.Toast
 
 object TimesheetManager {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
@@ -102,5 +104,25 @@ object TimesheetManager {
 
     fun getDatabase(): FirebaseDatabase {
         return database
+    }
+
+
+    fun deleteTimesheet(context: Context, timesheetId: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val timesheetRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("timesheets").child(timesheetId)
+
+            timesheetRef.removeValue()
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Timesheet deleted successfully", Toast.LENGTH_SHORT).show()
+                    (context as? ActiveTimesheetsPage)?.fetchAndDisplayTimesheets()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("TimesheetManager", "Error deleting timesheet: ${e.message}")
+                }
+        } else {
+            Log.e("TimesheetManager", "No current user logged in")
+        }
     }
 }

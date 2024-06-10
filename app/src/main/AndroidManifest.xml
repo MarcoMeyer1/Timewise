@@ -16,6 +16,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".TimesheetDetails"
+            android:label="Timesheet Details" />
+        <activity
             android:name=".DailyProgress"
             android:exported="false" />
         <activity
