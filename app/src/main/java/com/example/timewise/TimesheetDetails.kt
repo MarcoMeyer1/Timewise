@@ -1,6 +1,7 @@
 package com.example.timewise
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -12,11 +13,14 @@ class TimesheetDetails : AppCompatActivity() {
     private lateinit var entryCountTextView: TextView
     private lateinit var totalHoursTextView: TextView
     private lateinit var dbManager: DatabaseOperationsManager
+    private lateinit var btnDeleteTimesheet: Button
     private lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timesheet_details)
+
+        btnDeleteTimesheet = findViewById(R.id.btnDeleteTimesheet)
 
         timesheetNameTextView = findViewById(R.id.timesheet_name)
         entryCountTextView = findViewById(R.id.entry_count)
@@ -28,6 +32,14 @@ class TimesheetDetails : AppCompatActivity() {
         val timesheetId = intent.getStringExtra("timesheetId")
         if (timesheetId != null) {
             fetchAndDisplayTimesheet(timesheetId)
+        }
+
+        btnDeleteTimesheet.setOnClickListener {
+            val timesheetId = intent.getStringExtra("timesheetId")
+            if (timesheetId != null) {
+                TimesheetManager.deleteTimesheet(this,timesheetId)
+                finish()
+            }
         }
     }
 
@@ -53,4 +65,6 @@ class TimesheetDetails : AppCompatActivity() {
 
         totalHoursTextView.text = "Total Hours Spent: $totalHours"
     }
+
+
 }

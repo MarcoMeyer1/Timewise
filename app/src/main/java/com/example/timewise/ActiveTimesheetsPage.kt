@@ -52,7 +52,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
         recyclerView.adapter = adapter
     }
 
-    private fun fetchAndDisplayTimesheets() {
+    fun fetchAndDisplayTimesheets() {
         val db = TimesheetManager.getDatabase()
         val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
         dbManager.fetchTimesheets(db, userId) { timesheets, idMap ->
