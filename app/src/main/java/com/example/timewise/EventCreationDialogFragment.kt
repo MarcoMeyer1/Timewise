@@ -69,39 +69,57 @@ class EventCreationDialogFragment : DialogFragment() {
         }
 
         btnCreateEvent?.setOnClickListener {
-            val eventName = txtEventName?.text.toString()
-            val allDay = allDaySwitch?.isChecked ?: false
-            val category = categorySpinner?.selectedItem.toString()
-            val timesheet = timesheets.find { it.name == category }
+            try {
+                val eventName = txtEventName?.text.toString().trim()
+                if (eventName.isEmpty()) {
+                    Toast.makeText(requireContext(), "Event name cannot be empty", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val allDay = allDaySwitch?.isChecked ?: false
+                val category = categorySpinner?.selectedItem.toString()
+                val timesheet = timesheets.find { it.name == category }
 
-            if (timesheet != null) {
-                val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
-                val userId = TimesheetManager.getAuth().currentUser?.uid ?: return@setOnClickListener
-                val timesheetId = timesheetIdMap[timesheet.name]
+                if (startDate == null || endDate == null) {
+                    Toast.makeText(requireContext(), "Please select start and end dates", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
-                dbManager.createTimesheetEntry(
-                    TimesheetManager.getDatabase(),
-                    userId,
-                    timesheetId ?: "",
-                    UUID.randomUUID().toString(),
-                    eventName,
-                    startDate!!.timeInMillis,
-                    endDate!!.timeInMillis,
-                    allDay,
-                    selectedImageUri?.toString()
-                )
+                if (startDate!!.after(endDate)) {
+                    Toast.makeText(requireContext(), "End date cannot be before start date", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
-                Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Timesheet not found", Toast.LENGTH_SHORT).show()
+                if (timesheet != null) {
+                    val timesheetEntry = TimesheetEntry(eventName, startDate!!, endDate!!, allDay, category, selectedImageUri)
+                    val userId = TimesheetManager.getAuth().currentUser?.uid ?: return@setOnClickListener
+                    val timesheetId = timesheetIdMap[timesheet.name]
+
+                    dbManager.createTimesheetEntry(
+                        TimesheetManager.getDatabase(),
+                        userId,
+                        timesheetId ?: "",
+                        UUID.randomUUID().toString(),
+                        eventName,
+                        startDate!!.timeInMillis,
+                        endDate!!.timeInMillis,
+                        allDay,
+                        selectedImageUri?.toString()
+                    )
+
+                    Toast.makeText(requireContext(), "Event created successfully!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Timesheet not found", Toast.LENGTH_SHORT).show()
+                }
+                dismiss()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "An error occurred: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("EventCreation", "Error creating event", e)
             }
-            dismiss()
         }
 
         builder.setView(view)
         return builder.create()
     }
-
 
     private fun openPhotoPicker() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
