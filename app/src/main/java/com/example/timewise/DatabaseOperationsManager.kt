@@ -208,6 +208,21 @@ class DatabaseOperationsManager(private val context: Context) {
         })
     }
 
+    fun fetchUserGoals(db: FirebaseDatabase, userId: String, completion: (Float, Float) -> Unit) {
+        val userRef = db.getReference("users/$userId/dailyGoal")
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val minHours = snapshot.child("minHours").getValue(Float::class.java) ?: 0f
+                val maxHours = snapshot.child("maxHours").getValue(Float::class.java) ?: 0f
+                completion(minHours, maxHours)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DatabaseOperationsManager", "Error fetching user goals: $error")
+                completion(0f, 0f)
+            }
+        })
+    }
 
 
     fun fetchTimesheetEntriesBetweenDates(

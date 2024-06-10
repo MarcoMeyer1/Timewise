@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import java.util.*
 
@@ -23,6 +25,9 @@ class Analytics : BaseActivity() {
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
     private lateinit var timesheetEntryList: RecyclerView
+    private lateinit var chart: BarChart
+    private lateinit var dailyChart: BarChart
+    private var timesheetEntries: List<TimesheetManager.TimesheetEntry> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,25 +36,19 @@ class Analytics : BaseActivity() {
         setupRecyclerView()
 
         val selectDateButton: Button = findViewById(R.id.selectDateButton)
-        val chart: BarChart = findViewById(R.id.chart)
-        val dailyChart: BarChart = findViewById(R.id.dailyChart)
+        chart = findViewById(R.id.chart)
+        dailyChart = findViewById(R.id.dailyChart)
 
         updateToolbarColor("#FF6262")
 
         selectDateButton.setOnClickListener {
             selectDateRange {
-                updateCharts(chart, dailyChart)
+                fetchDataAndUpdateUI()
             }
         }
 
         // Load all data initially
-        updateCharts(chart, dailyChart)
-    }
-
-    private fun initializeDateRange() {
-        startDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -7) }  // One week ago
-        endDate = Calendar.getInstance()  // Today
-        updateTimesheetEntries()
+        fetchDataAndUpdateUI()
     }
 
     private fun setupRecyclerView() {
@@ -58,18 +57,17 @@ class Analytics : BaseActivity() {
         timesheetEntryList.adapter = TimesheetEntryAdapter(mutableListOf(), this::handleEntryClick)
     }
 
-    private fun getTimesheetEntries(callback: (List<TimesheetManager.TimesheetEntry>) -> Unit) {
-        val start = startDate?.timeInMillis ?: return callback(emptyList())
-        val end = endDate?.timeInMillis ?: return callback(emptyList())
+    private fun fetchDataAndUpdateUI() {
+        val start = startDate?.timeInMillis ?: return
+        val end = endDate?.timeInMillis ?: return
 
-        val entries = mutableListOf<TimesheetManager.TimesheetEntry>()
-        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return callback(entries)
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
         val db = TimesheetManager.getDatabase()
 
-        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(db, userId, start, end) {
-            entries.addAll(it)
-            (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(entries)
-            callback(entries)
+        DatabaseOperationsManager(this).fetchTimesheetEntriesBetweenDates(db, userId, start, end) { fetchedEntries ->
+            timesheetEntries = fetchedEntries
+            updateTimesheetEntries()
+            updateCharts()
         }
     }
 
@@ -82,9 +80,7 @@ class Analytics : BaseActivity() {
     }
 
     private fun updateTimesheetEntries() {
-        getTimesheetEntries {
-            (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(it)
-        }
+        (timesheetEntryList.adapter as TimesheetEntryAdapter).updateEntries(timesheetEntries)
     }
 
     private fun showPhoto(photoUri: Uri) {
@@ -108,20 +104,16 @@ class Analytics : BaseActivity() {
                     set(Calendar.MILLISECOND, 999)
                 }
                 onDatesSelected()
-                updateTimesheetEntries()
             }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
         }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    private fun updateCharts(chart: BarChart, dailyChart: BarChart) {
-        getTimesheetEntries { entries ->
-            setupChart(chart, entries)
-            setupDailyChart(dailyChart, entries)
-        }
+    private fun updateCharts() {
+        setupChart(chart, getChartData())
+        setupDailyChart(dailyChart, getDailyChartData())
     }
 
-    private fun setupChart(chart: BarChart, timesheetEntries: List<TimesheetManager.TimesheetEntry>) {
-        val entries = getChartData(timesheetEntries)
+    private fun setupChart(chart: BarChart, entries: List<BarEntry>) {
         if (entries.isEmpty()) {
             chart.clear()
             Toast.makeText(this, "No data to display", Toast.LENGTH_SHORT).show()
@@ -155,14 +147,15 @@ class Analytics : BaseActivity() {
         }
     }
 
-    private fun getChartData(timesheetEntries: List<TimesheetManager.TimesheetEntry>): MutableList<BarEntry> {
+    private fun getChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()
 
-        val timesheetHours = mutableMapOf<String, Float>()
-        for (entry in timesheetEntries) {
-            val hours = (entry.endDate.timeInMillis - entry.startDate.timeInMillis) / (1000 * 60 * 60).toFloat()
-            timesheetHours[entry.name] = timesheetHours.getOrDefault(entry.name, 0f) + hours
-        }
+        val timesheetHours = timesheetEntries.groupBy { it.name }
+            .mapValues { entry ->
+                entry.value.map {
+                    ((it.endDate.timeInMillis - it.startDate.timeInMillis) / (1000 * 60 * 60)).toFloat()
+                }.sum()
+            }
 
         timesheetHours.entries.forEachIndexed { index, entry ->
             entries.add(BarEntry(index.toFloat(), entry.value))
@@ -171,8 +164,7 @@ class Analytics : BaseActivity() {
         return entries
     }
 
-    private fun setupDailyChart(chart: BarChart, timesheetEntries: List<TimesheetManager.TimesheetEntry>) {
-        val entries = getDailyChartData(timesheetEntries)
+    private fun setupDailyChart(chart: BarChart, entries: List<BarEntry>) {
         if (entries.isEmpty()) {
             chart.clear()
             Toast.makeText(this, "No data to display", Toast.LENGTH_SHORT).show()
@@ -197,19 +189,52 @@ class Analytics : BaseActivity() {
         legend.formSize = 8f
         legend.textSize = 12f
 
+        val dailyHours = getDailyHours()
+
+        val xAxis = chart.xAxis
+        xAxis.valueFormatter = IndexAxisValueFormatter(entries.mapIndexed { index, _ ->
+            val date = dailyHours.keys.sorted()[index]
+            if (date.length >= 10) {
+                "${date.substring(8, 10)}/${date.substring(5, 7)}"
+            } else {
+                date
+            }
+        })
+        xAxis.granularity = 1f
+
+        // Fetch the user's goals and add limit lines
+        val userId = TimesheetManager.getAuth().currentUser?.uid ?: return
+        val db = TimesheetManager.getDatabase()
+
+        DatabaseOperationsManager(this).fetchUserGoals(db, userId) { minHours, maxHours ->
+            val minLine = LimitLine(minHours, "Min Hours")
+            minLine.lineWidth = 2f
+            minLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+            minLine.textSize = 10f
+            minLine.lineColor = Color.RED
+
+            val maxLine = LimitLine(maxHours, "Max Hours")
+            maxLine.lineWidth = 2f
+            maxLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+            maxLine.textSize = 10f
+            maxLine.lineColor = Color.GREEN
+
+            val yAxis = chart.axisLeft
+            yAxis.addLimitLine(minLine)
+            yAxis.addLimitLine(maxLine)
+
+            chart.invalidate()
+        }
+
         chart.animateY(1000)
         chart.invalidate()
     }
 
-    private fun getDailyChartData(timesheetEntries: List<TimesheetManager.TimesheetEntry>): MutableList<BarEntry> {
+
+    private fun getDailyChartData(): List<BarEntry> {
         val entries = mutableListOf<BarEntry>()
 
-        val dailyHours = mutableMapOf<String, Float>()
-        for (entry in timesheetEntries) {
-            val date = "${entry.startDate.get(Calendar.YEAR)}-${entry.startDate.get(Calendar.MONTH) + 1}-${entry.startDate.get(Calendar.DAY_OF_MONTH)}"
-            val hours = (entry.endDate.timeInMillis - entry.startDate.timeInMillis) / (1000 * 60 * 60).toFloat()
-            dailyHours[date] = dailyHours.getOrDefault(date, 0f) + hours
-        }
+        val dailyHours = getDailyHours()
 
         dailyHours.forEach { (date, hours) ->
             val index = dailyHours.keys.sorted().indexOf(date)
@@ -217,5 +242,15 @@ class Analytics : BaseActivity() {
         }
 
         return entries
+    }
+
+    private fun getDailyHours(): Map<String, Float> {
+        val dailyHours = mutableMapOf<String, Float>()
+        for (entry in timesheetEntries) {
+            val date = "${entry.startDate.get(Calendar.YEAR)}-${entry.startDate.get(Calendar.MONTH) + 1}-${entry.startDate.get(Calendar.DAY_OF_MONTH)}"
+            val hours = ((entry.endDate.timeInMillis - entry.startDate.timeInMillis) / (1000 * 60 * 60)).toFloat()
+            dailyHours[date] = dailyHours.getOrDefault(date, 0f) + hours
+        }
+        return dailyHours
     }
 }
