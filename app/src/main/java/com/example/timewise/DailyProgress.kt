@@ -31,6 +31,9 @@ class DailyProgress : BaseActivity() {
     private lateinit var ivSaturday: ImageView
     private lateinit var ivSunday: ImageView
 
+    private var currentStreak = 0
+    private var lastStreakUpdate = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -61,8 +64,31 @@ class DailyProgress : BaseActivity() {
 
         userId?.let {
             fetchUserGoals(it)
+            fetchStreak(it)
+            fetchLastStreakUpdate(it)
             fetchDailyProgress(it)
         }
+    }
+
+    private fun fetchStreak(userId: String) {
+        databaseOperationsManager.fetchStreak(FirebaseDatabase.getInstance(), userId) { streak ->
+            currentStreak = streak
+            tvStreakNumber.text = streak.toString()
+        }
+    }
+
+    private fun updateStreak(userId: String, streak: Int) {
+        databaseOperationsManager.updateStreak(FirebaseDatabase.getInstance(), userId, streak)
+    }
+
+    private fun fetchLastStreakUpdate(userId: String) {
+        databaseOperationsManager.fetchLastStreakUpdate(FirebaseDatabase.getInstance(), userId) { lastUpdate ->
+            lastStreakUpdate = lastUpdate
+        }
+    }
+
+    private fun updateLastStreakUpdate(userId: String, date: Long) {
+        databaseOperationsManager.updateLastStreakUpdate(FirebaseDatabase.getInstance(), userId, date)
     }
 
     private fun fetchDailyProgress(userId: String) {
@@ -76,7 +102,6 @@ class DailyProgress : BaseActivity() {
         databaseOperationsManager.fetchTimesheetEntriesForDate(FirebaseDatabase.getInstance(), userId, today) { entries ->
             val totalHours = entries.sumOf { (it.endDate.timeInMillis - it.startDate.timeInMillis) / 3600000.0 }
             val hoursRemaining = userGoals.first - totalHours
-            tvStreakNumber.text = calculateStreak(entries).toString()
             progressBar.progress = ((totalHours / userGoals.first) * 100).coerceIn(0.0, 100.0).toInt()
             progressText.text = if (hoursRemaining > 0) {
                 "${String.format("%.2f", hoursRemaining)} hours to go"
@@ -88,6 +113,24 @@ class DailyProgress : BaseActivity() {
                 tvMessage.text = "You are doing really great, $displayName!"
             }
 
+            val todayStart = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+
+            if (totalHours >= userGoals.first && lastStreakUpdate < todayStart) {
+                currentStreak++
+                updateStreak(userId, currentStreak)
+                updateLastStreakUpdate(userId, todayStart)
+            } else if (totalHours < userGoals.first && lastStreakUpdate < todayStart) {
+                currentStreak = 0
+                updateStreak(userId, currentStreak)
+                updateLastStreakUpdate(userId, todayStart)
+            }
+
+            tvStreakNumber.text = currentStreak.toString()
             updateDayIcons(entries, totalHours)
         }
     }
@@ -126,22 +169,6 @@ class DailyProgress : BaseActivity() {
         databaseOperationsManager.fetchUserGoals(FirebaseDatabase.getInstance(), userId) { minHours, maxHours ->
             userGoals = Pair(minHours.toFloat(), maxHours.toFloat())
         }
-    }
-
-    private fun calculateStreak(entries: List<TimesheetManager.TimesheetEntry>): Int {
-        val today = Calendar.getInstance()
-        var streak = 0
-
-        for (i in 0 until 7) {
-            val day = today.clone() as Calendar
-            day.add(Calendar.DAY_OF_YEAR, -i)
-            if (entries.any { isSameDay(it.startDate, day) }) {
-                streak++
-            } else {
-                break
-            }
-        }
-        return streak
     }
 
     private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {

@@ -221,6 +221,53 @@ class DatabaseOperationsManager(private val context: Context) {
 
 
 
+    fun updateStreak(db: FirebaseDatabase, userId: String, streak: Int) {
+        val userRef = db.getReference("users/$userId")
+        userRef.child("streak").setValue(streak).addOnSuccessListener {
+            // Streak updated successfully
+        }.addOnFailureListener {
+            // Handle any errors
+        }
+    }
+
+    fun fetchStreak(db: FirebaseDatabase, userId: String, completion: (Int) -> Unit) {
+        val userRef = db.getReference("users/$userId/streak")
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val streak = snapshot.getValue(Int::class.java) ?: 0
+                completion(streak)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                completion(0)
+            }
+        })
+    }
+
+    fun updateLastStreakUpdate(db: FirebaseDatabase, userId: String, date: Long) {
+        val userRef = db.getReference("users/$userId")
+        userRef.child("lastStreakUpdate").setValue(date).addOnSuccessListener {
+            // Last streak update date set successfully
+        }.addOnFailureListener {
+            // Handle any errors
+        }
+    }
+
+    fun fetchLastStreakUpdate(db: FirebaseDatabase, userId: String, completion: (Long) -> Unit) {
+        val userRef = db.getReference("users/$userId/lastStreakUpdate")
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val lastStreakUpdate = snapshot.getValue(Long::class.java) ?: 0L
+                completion(lastStreakUpdate)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                completion(0L)
+            }
+        })
+    }
+
+
 
     fun fetchAllTimesheetEntriesForUser(
         db: FirebaseDatabase,

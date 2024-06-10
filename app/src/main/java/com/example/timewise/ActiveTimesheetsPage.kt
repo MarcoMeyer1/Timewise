@@ -32,7 +32,7 @@ class ActiveTimesheetsPage : BaseActivity(), TimeSheetAdapter.OnTimesheetEditLis
         currentUser = auth.currentUser!!
         dbManager = DatabaseOperationsManager(this)
 
-        updateToolbarColor("#FF8C00")
+        updateToolbarColor("#70F541")
         setupRecyclerView()
         fetchAndDisplayTimesheets()
 
