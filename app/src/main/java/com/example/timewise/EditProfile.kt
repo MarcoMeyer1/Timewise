@@ -39,13 +39,14 @@ class EditProfile : BaseActivity() {
         database = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
 
-        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
-            if (uri != null) {
-                updateProfilePicture(uri)
-            } else {
-                Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show()
+        pickMedia =
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
+                if (uri != null) {
+                    updateProfilePicture(uri)
+                } else {
+                    Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show()
+                }
             }
-        }
 
         val btnChangePicture: Button = findViewById(R.id.btnEditChangePicture)
         btnChangePicture.setOnClickListener {
@@ -64,9 +65,10 @@ class EditProfile : BaseActivity() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-            // Validate inputs (if necessary) then update user details
             if (name.isNotBlank() && password.isNotBlank()) {
-                val userId = auth.currentUser?.uid ?: return@setOnClickListener
+                val user = auth.currentUser ?: return@setOnClickListener
+
+                val userId = user.uid
                 val userRef = database.getReference("users").child(userId)
 
                 val updates = mapOf(
@@ -76,12 +78,27 @@ class EditProfile : BaseActivity() {
                 )
 
                 userRef.updateChildren(updates).addOnSuccessListener {
-                    Toast.makeText(this, "Profile Updated Successfully", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, HomePage::class.java)
-                    startActivity(intent)
-                    finish()
+                    user.updatePassword(password).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(
+                                this,
+                                "Profile and password updated successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            val intent = Intent(this, HomePage::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "Error updating password: ${task.exception?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }.addOnFailureListener { e ->
-                    Toast.makeText(this, "Error updating profile: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error updating profile: ${e.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             } else {
                 Toast.makeText(this, "Please fill out all the fields", Toast.LENGTH_SHORT).show()
